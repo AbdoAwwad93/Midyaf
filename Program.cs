@@ -14,9 +14,10 @@ public class Program
         builder.Services.AddControllers();
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        var connnectionString = Environment.GetEnvironmentVariable("CONNECTION_STRING");
         builder.Services.AddDbContext<AppDbContext>(option =>
         {
-            option.UseNpgsql(builder.Configuration.GetConnectionString("constr"));
+            option.UseNpgsql(connnectionString);
             option.UseLazyLoadingProxies();
         });
         var app = builder.Build();
