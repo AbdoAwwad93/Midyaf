@@ -1,4 +1,4 @@
-namespace Midyaf.Models;
+namespace Midyaf.Enums;
 
 public enum Status
 {
