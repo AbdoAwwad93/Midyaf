@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Midyaf.Models;
 
-namespace Midyaf.DataAccess;
+namespace Midyaf.Infrastructure.Data;
 
 public class AppDbContext:IdentityDbContext
 {

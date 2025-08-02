@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using Midyaf.DataAccess;
-using Microsoft.Extensions.Configuration;
+using Midyaf.Infrastructure.Data;
+
 namespace Midyaf;
 
 public class Program
