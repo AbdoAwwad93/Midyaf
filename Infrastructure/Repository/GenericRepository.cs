@@ -1,8 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Midyaf.Core.Interfaces;
-using Midyaf.DataAccess;
 using Midyaf.Infrastructure.Data;
-
 namespace Midyaf.Infrastructure.repository;
 
 public class GenericRepository<T>:IGenericRepository<T> where T:class

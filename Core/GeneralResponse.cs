@@ -10,4 +10,9 @@ public class GeneralResponse
         this.IsSuccess = isSuccess;
         this.Errors = Errors;
     }
+
+    public override string ToString()
+    {
+        return base.ToString()+this.Message;
+    }
 }

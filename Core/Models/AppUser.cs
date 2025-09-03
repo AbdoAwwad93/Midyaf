@@ -12,5 +12,4 @@ public class AppUser:IdentityUser
     public virtual List<Review>?  Reviews { get; set; }
     public virtual List<Room> Rooms { get; set; }
     public virtual List<Reservation> Reservations { get; set; }
-    
 }

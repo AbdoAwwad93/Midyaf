@@ -23,7 +23,7 @@ public class AccountController : ControllerBase
         _userManager = userManager;
     }
 
-    [HttpPost("SignUP")]
+    [HttpPost("Signup")]
     public async Task<IActionResult> SignUp(RegisterDTO registerDto)
     {
         var response = new GeneralResponse();
@@ -36,6 +36,7 @@ public class AccountController : ControllerBase
         {
             FirstName = registerDto.FirstName,
             LastName = registerDto.LastName,
+            UserName = registerDto.UserName,
             Email = registerDto.Email,
             PhoneNumber = registerDto.PhoneNumber,
             City = registerDto.City,
@@ -51,8 +52,13 @@ public class AccountController : ControllerBase
         var result = await _userManager.CreateAsync(appUser, registerDto.Password);
         if (!result.Succeeded)
         {
-            response.SetResponse("Something went wrong while creating account",false);
-            return BadRequest(response);
+          // response.SetResponse(string.Join(";",result.Errors.Select(e=>e.Description)),false);
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("",error.Description);
+            }
+
+            return BadRequest(ModelState);
         }
         return Created();
     }

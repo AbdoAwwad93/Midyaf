@@ -5,7 +5,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Midyaf.Infrastructure.Migrations
+namespace Midyaf.Infrastructure.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Init : Migration
@@ -35,6 +35,8 @@ namespace Midyaf.Infrastructure.Migrations
                     Discriminator = table.Column<string>(type: "character varying(13)", maxLength: 13, nullable: false),
                     FirstName = table.Column<string>(type: "text", nullable: true),
                     LastName = table.Column<string>(type: "text", nullable: true),
+                    Country = table.Column<string>(type: "text", nullable: true),
+                    City = table.Column<string>(type: "text", nullable: true),
                     Address = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
