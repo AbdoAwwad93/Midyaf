@@ -1,10 +1,12 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using AutoMapper;
 using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Midyaf.Core.DTOs;
 using Midyaf.DTOs;
 using Midyaf.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -16,11 +18,14 @@ public class AccountController : ControllerBase
 {
     private readonly SignInManager<AppUser> _signInManager;
     private readonly UserManager<AppUser> _userManager;
+    private readonly IMapper mapper;
+
     public AccountController(SignInManager<AppUser> signInManager
-        ,UserManager<AppUser> userManager)
+        ,UserManager<AppUser> userManager,IMapper mapper)
     {
         _signInManager = signInManager;
         _userManager = userManager;
+        this.mapper = mapper;
     }
 
     [HttpPost("Signup")]
@@ -32,17 +37,18 @@ public class AccountController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        AppUser appUser = new()
-        {
-            FirstName = registerDto.FirstName,
-            LastName = registerDto.LastName,
-            UserName = registerDto.UserName,
-            Email = registerDto.Email,
-            PhoneNumber = registerDto.PhoneNumber,
-            City = registerDto.City,
-            Country = registerDto.Country,
-            Address = registerDto.Address,
-        };
+        //AppUser appUser = new()
+        //{
+        //    FirstName = registerDto.FirstName,
+        //    LastName = registerDto.LastName,
+        //    UserName = registerDto.UserName,
+        //    Email = registerDto.Email,
+        //    PhoneNumber = registerDto.PhoneNumber,
+        //    City = registerDto.City,
+        //    Country = registerDto.Country,
+        //    Address = registerDto.Address,
+        //};
+        var appUser = mapper.Map<AppUser>(registerDto);
         var appuser =  await _userManager.FindByEmailAsync(registerDto.Email);
         if (appuser != null)
         {
@@ -52,7 +58,6 @@ public class AccountController : ControllerBase
         var result = await _userManager.CreateAsync(appUser, registerDto.Password);
         if (!result.Succeeded)
         {
-          // response.SetResponse(string.Join(";",result.Errors.Select(e=>e.Description)),false);
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("",error.Description);
@@ -92,11 +97,9 @@ public class AccountController : ControllerBase
                     expires: DateTime.Now.AddMinutes(30),
                     signingCredentials: creds
                 );
-                
-                return Ok(new
-                {
-                    token = new JwtSecurityTokenHandler().WriteToken(token),
-                });
+                var loginToken  = new JwtSecurityTokenHandler().WriteToken(token);
+                response.SetResponse("Login done successfully",true,Data:loginToken);
+                return Ok(response);
             }
         }
         response.SetResponse("Invalid Email or Password",false);

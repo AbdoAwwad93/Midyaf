@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Midyaf.Core.Interfaces;
 using Midyaf.Infrastructure.Data;
+using Midyaf.Infrastructure.Mapping;
 using Midyaf.Infrastructure.repository;
 using Midyaf.Models;
+using AutoMapper;
 
 namespace Midyaf;
 
@@ -29,6 +32,7 @@ public class Program
             option.UseLazyLoadingProxies();
         });
         builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+        builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfwork));
         builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
         {
             options.Password.RequireDigit = false;
@@ -37,6 +41,7 @@ public class Program
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
         }).AddEntityFrameworkStores<AppDbContext>();
+        builder.Services.AddAutoMapper(typeof(MappingProfile));    
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
