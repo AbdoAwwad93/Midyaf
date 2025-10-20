@@ -9,7 +9,7 @@ namespace Midyaf.Infrastructure.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Hotel,AddHotelDTO>().ReverseMap();
+            CreateMap<Hotel,HotelDTO>().ReverseMap();
             CreateMap<AppUser, RegisterDTO>().ReverseMap();
         }
     }

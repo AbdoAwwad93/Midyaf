@@ -2,7 +2,7 @@
 
 namespace Midyaf.Core.DTOs
 {
-    public class AddHotelDTO
+    public class HotelDTO
     {
         [Required]
         [StringLength(50)]

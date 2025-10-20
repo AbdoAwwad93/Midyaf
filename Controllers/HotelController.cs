@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Midyaf.Core.DTOs;
 using Midyaf.Core.Interfaces;
@@ -19,7 +20,7 @@ namespace Midyaf.Controllers
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
-        [HttpGet("/Hotels")]
+        [HttpGet("/hotel")]
         public async Task<IActionResult> GetAllHotels()
         {
             var response = new GeneralResponse();
@@ -32,8 +33,8 @@ namespace Midyaf.Controllers
             response.SetResponse("Error occured while retriving hotels", false);
             return BadRequest(response);
         }
-        [HttpPost("/Hotel/add")]
-        public async Task<IActionResult> Add(AddHotelDTO hotelDto)
+        [HttpPost("/hotel/add")]
+        public async Task<IActionResult> Add(HotelDTO hotelDto)
         {
             var response = new GeneralResponse();
             if (!ModelState.IsValid)
@@ -46,6 +47,27 @@ namespace Midyaf.Controllers
             await unitOfWork.SaveAsync();
             response.SetResponse("Hotel added successfully", true, hotel);
 
+            return Ok(response);
+        }
+        [HttpPatch("/hotel/edit/{id:int}")]
+        public async Task<IActionResult> Edit(int id, HotelDTO hotelDto)
+        {
+            var response = new GeneralResponse();
+            if (!ModelState.IsValid)
+            {
+                response.SetResponse("invalid data", false);
+                return BadRequest(response);
+            }
+            var hotel = await unitOfWork.Hotels.GetByIdAsync(id);
+            if(hotel== null)
+            {
+                response.SetResponse("No hotel existed with this data", false);
+                return BadRequest(response);
+            }
+            mapper.Map(hotelDto,hotel);
+            await unitOfWork.Hotels.UpdateAsync(hotel);
+            await unitOfWork.SaveAsync();
+            response.SetResponse("Hotel edited successfully", true);
             return Ok(response);
         }
     }

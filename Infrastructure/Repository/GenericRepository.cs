@@ -28,7 +28,7 @@ public class GenericRepository<T>:IGenericRepository<T> where T:class
         _dbset.Update(entity);
     }
 
-    public async Task<T?> GetByIdAsync(string id)
+    public async Task<T?> GetByIdAsync(object id)
     {
         var entity = await _dbset.FindAsync(id);
         return entity;
