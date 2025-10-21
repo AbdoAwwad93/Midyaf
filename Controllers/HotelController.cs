@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Midyaf.Core.DTOs;
 using Midyaf.Core.Interfaces;
 using Midyaf.Models;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Midyaf.Controllers
 {
@@ -67,8 +68,24 @@ namespace Midyaf.Controllers
             mapper.Map(hotelDto,hotel);
             await unitOfWork.Hotels.UpdateAsync(hotel);
             await unitOfWork.SaveAsync();
-            response.SetResponse("Hotel edited successfully", true);
+            response.SetResponse("Hotel edited successfully", true,Data:hotel);
             return Ok(response);
         }
+        [HttpDelete("hotel/delete/{id:int}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var response  = new GeneralResponse();
+            var hotel = await unitOfWork.Hotels.GetByIdAsync(id);
+            if (hotel == null)
+            {
+                response.SetResponse("there is no hotel with this data", false);
+                return BadRequest(response);
+            }
+            await unitOfWork.Hotels.RemoveAsync(hotel);
+            await unitOfWork.SaveAsync();
+            response.SetResponse("Hotel removed successfully", true);
+            return Ok(response);
+        }
+
     }
 }
