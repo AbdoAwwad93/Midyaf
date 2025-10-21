@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -22,6 +23,7 @@ namespace Midyaf.Controllers
             this.mapper = mapper;
         }
         [HttpGet("/hotel")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAllHotels()
         {
             var response = new GeneralResponse();
@@ -35,6 +37,7 @@ namespace Midyaf.Controllers
             return BadRequest(response);
         }
         [HttpPost("/hotel/add")]
+        [Authorize(Roles ="Admin")]
         public async Task<IActionResult> Add(HotelDTO hotelDto)
         {
             var response = new GeneralResponse();

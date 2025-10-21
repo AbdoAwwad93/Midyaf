@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Midyaf.Core.Enums;
 using Midyaf.Models;
 
 namespace Midyaf.Infrastructure.Data;
@@ -12,13 +13,17 @@ public class AppDbContext:IdentityDbContext
     public DbSet<Review>  Reviews { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
 
-    public AppDbContext(DbContextOptions<AppDbContext> options):base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        :base(options)
     {
         
     }
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        builder.Entity<AppUser>().HasMany(user => user.ManagedHotels)
+            .WithOne(hotel => hotel.Manager)
+            .HasForeignKey(hotel=>hotel.ManagerId);
         builder.Entity<AppUser>().HasMany(user => user.Rooms)
             .WithOne(room => room.AppUser);
         builder.Entity<AppUser>().HasMany(user => user.Reviews)
@@ -31,6 +36,8 @@ public class AppDbContext:IdentityDbContext
         builder.Entity<Hotel>().HasMany(hotel => hotel.Reviews)
             .WithOne(review => review.Hotel);
         builder.Entity<Reservation>().Property(reservation => reservation.Status)
+            .HasConversion<string>();
+        builder.Entity<AppUser>().Property(user => user.Role)
             .HasConversion<string>();
     }
 }

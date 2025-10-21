@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Midyaf.Core.DTOs;
+using Midyaf.Core.Enums;
 using Midyaf.DTOs;
 using Midyaf.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
@@ -28,8 +29,23 @@ public class AccountController : ControllerBase
         this.mapper = mapper;
     }
 
-    [HttpPost("Signup")]
-    public async Task<IActionResult> SignUp(RegisterDTO registerDto)
+    [HttpPost("signup/user")]
+    public async Task<IActionResult> SignUpUser(RegisterDTO registerDto)
+    {
+        return await SignUpHelper(registerDto, UserRole.User);
+    }
+
+    [HttpPost("signup/manager")]
+    public async Task<IActionResult> SignUpManager(RegisterDTO registerDto)
+    {
+        return await SignUpHelper(registerDto, UserRole.Manager);
+    }
+    [HttpPost("signup/admin")]
+    public async Task<IActionResult> SignUpAdmin(RegisterDTO registerDto)
+    {
+        return await SignUpHelper(registerDto, UserRole.Admin);
+    }
+    private async Task<IActionResult> SignUpHelper(RegisterDTO registerDto,UserRole role)
     {
         var response = new GeneralResponse();
         if (!ModelState.IsValid)
@@ -37,17 +53,6 @@ public class AccountController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        //AppUser appUser = new()
-        //{
-        //    FirstName = registerDto.FirstName,
-        //    LastName = registerDto.LastName,
-        //    UserName = registerDto.UserName,
-        //    Email = registerDto.Email,
-        //    PhoneNumber = registerDto.PhoneNumber,
-        //    City = registerDto.City,
-        //    Country = registerDto.Country,
-        //    Address = registerDto.Address,
-        //};
         var appUser = mapper.Map<AppUser>(registerDto);
         var appuser =  await _userManager.FindByEmailAsync(registerDto.Email);
         if (appuser != null)
@@ -55,6 +60,7 @@ public class AccountController : ControllerBase
             response.SetResponse("Email already exists",false);
             return BadRequest(response);
         }
+        appUser.Role = role;
         var result = await _userManager.CreateAsync(appUser, registerDto.Password);
         if (!result.Succeeded)
         {
@@ -62,10 +68,13 @@ public class AccountController : ControllerBase
             {
                 ModelState.AddModelError("",error.Description);
             }
-
+            
             return BadRequest(ModelState);
         }
-        return Created();
+        //appuser.Role = role;
+        await _userManager.AddToRoleAsync(appUser,role.ToString());
+        response.SetResponse($"user with role {role} created successfully", true, appuser);
+        return Created("",response);
     }
 
     [HttpPost("Login")]
@@ -80,6 +89,7 @@ public class AccountController : ControllerBase
         if (appUser != null)
         {
             var isValid = await _userManager.CheckPasswordAsync(appUser, loginDto.Password);
+            var roles = await _userManager.GetRolesAsync(appUser);
             if (isValid)
             {
                 var Claims = new List<Claim>()
@@ -87,6 +97,10 @@ public class AccountController : ControllerBase
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.NameIdentifier, appUser.Id)
                 };
+                foreach(var role in roles)
+                {
+                    Claims.Add(new Claim(ClaimTypes.Role, role));
+                }
                 var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey!));
                 var creds = new SigningCredentials(key,SecurityAlgorithms.HmacSha256);

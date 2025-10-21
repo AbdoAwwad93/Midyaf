@@ -7,6 +7,8 @@ public class Hotel
     public string Address { get; set; }
     public string City { get; set; }
     public string Country { get; set; }
+    public string ManagerId { get; set; }
+    public virtual AppUser Manager { get; set; }
     public virtual List<Review>? Reviews { get; set; }
     public virtual List<Room> Rooms { get; set; }
 }

@@ -7,12 +7,13 @@ using Midyaf.Infrastructure.Mapping;
 using Midyaf.Infrastructure.repository;
 using Midyaf.Models;
 using AutoMapper;
+using System.Threading.Tasks;
 
 namespace Midyaf;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +44,13 @@ public class Program
         }).AddEntityFrameworkStores<AppDbContext>();
         builder.Services.AddAutoMapper(typeof(MappingProfile));    
         var app = builder.Build();
+        using (var scop = app.Services.CreateScope())
+        {
+            var roleManager = scop.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var userManager = scop.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+            await IdentityDataInitializer.SeedRoleAsync(roleManager);
+            await IdentityDataInitializer.SeedAdmin(userManager);
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
