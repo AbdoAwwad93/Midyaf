@@ -17,27 +17,27 @@ namespace Midyaf.Controllers
         private readonly IUnitOfWork unitOfWork;
         private readonly IMapper mapper;
 
-        public HotelController(IUnitOfWork unitOfWork,IMapper mapper)
+        public HotelController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
         [HttpGet("/hotel")]
-        //[Authorize(Roles = "Admin")]
+
         public async Task<IActionResult> GetAllHotels()
         {
             var response = new GeneralResponse();
             var hotels = await unitOfWork.Hotels.GetAllAsync();
-            if(hotels != null)
+            if (hotels != null)
             {
-                response.SetResponse("All hotels retrived successfully",true,Data:hotels);
+                response.SetResponse("All hotels retrived successfully", true, Data: hotels);
                 return Ok(response);
             }
             response.SetResponse("Error occured while retriving hotels", false);
             return BadRequest(response);
         }
         [HttpPost("/hotel/add")]
-        [Authorize(Roles ="Admin")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Add(HotelDTO hotelDto)
         {
             var response = new GeneralResponse();
@@ -54,6 +54,7 @@ namespace Midyaf.Controllers
             return Ok(response);
         }
         [HttpPatch("/hotel/edit/{id:int}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Edit(int id, HotelDTO hotelDto)
         {
             var response = new GeneralResponse();
@@ -75,6 +76,7 @@ namespace Midyaf.Controllers
             return Ok(response);
         }
         [HttpDelete("hotel/delete/{id:int}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> Delete(int id)
         {
             var response  = new GeneralResponse();
