@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using DotNetEnv;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -29,18 +30,20 @@ public class AccountController : ControllerBase
         this.mapper = mapper;
     }
 
-    [HttpPost("signup/user")]
+    [HttpPost("signup")]
     public async Task<IActionResult> SignUpUser(RegisterDTO registerDto)
     {
         return await SignUpHelper(registerDto, UserRole.User);
     }
 
     [HttpPost("signup/manager")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> SignUpManager(RegisterDTO registerDto)
     {
         return await SignUpHelper(registerDto, UserRole.Manager);
     }
     [HttpPost("signup/admin")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> SignUpAdmin(RegisterDTO registerDto)
     {
         return await SignUpHelper(registerDto, UserRole.Admin);
@@ -73,7 +76,7 @@ public class AccountController : ControllerBase
         }
         //appuser.Role = role;
         await _userManager.AddToRoleAsync(appUser,role.ToString());
-        response.SetResponse($"user with role {role} created successfully", true, appuser);
+        response.SetResponse($"User with role {role} created successfully", true, new {appUser.Email,appUser.Role});
         return Created("",response);
     }
 
@@ -112,11 +115,11 @@ public class AccountController : ControllerBase
                     signingCredentials: creds
                 );
                 var loginToken  = new JwtSecurityTokenHandler().WriteToken(token);
-                response.SetResponse("Login done successfully",true,Data:loginToken);
+                response.SetResponse("Authentication successfu", true,Data:loginToken);
                 return Ok(response);
             }
         }
         response.SetResponse("Invalid Email or Password",false);
-        return BadRequest(response);
+        return Unauthorized(response);
     }
 }
