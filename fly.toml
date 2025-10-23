@@ -17,10 +17,9 @@ primary_region = 'cdg'
   processes = ['app']
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  cpu_kind = "shared"
   cpus = 1
-  memory_mb = 1024
+  memory_mb = 256
 [env]
    CONNECTION_STRING =Host=hopper.proxy.rlwy.net;Port=14410;Database=railway;Username=postgres;Password=JDpHrFOpicncoHFjtABQrmahbcDdRHRR;SSL Mode=Require;Trust Server Certificate=true;
    Issuer = http://localhost:5121/
