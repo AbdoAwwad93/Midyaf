@@ -51,6 +51,7 @@ public class Program
         builder.Services.AddScoped<IHotelService, HotelService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
+        builder.Services.AddScoped<IReservationService, ReservationService>();
         
         var app = builder.Build();
         using (var scop = app.Services.CreateScope())

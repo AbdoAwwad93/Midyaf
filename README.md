@@ -412,6 +412,357 @@ Authorization: Bearer <jwt-token>
 
 ---
 
+## Room Endpoints
+
+### 1. Get All Rooms
+
+Retrieve a list of all rooms.
+
+**Endpoint:** `GET /api/Room`
+
+**Authentication:** Not required
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "All rooms retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [
+    {
+      "id": 1,
+      "roomNumber": "101",
+      "price": 150.00,
+      "capacity": 2,
+      "isAvailable": true,
+      "imagesUrls": ["https://example.com/room1.jpg"],
+      "hotelId": 1
+    }
+  ]
+}
+```
+
+---
+
+### 2. Get Room by ID
+
+Retrieve a specific room by its ID.
+
+**Endpoint:** `GET /api/Room/{id}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {
+    "id": 1,
+    "roomNumber": "101",
+    "price": 150.00,
+    "capacity": 2,
+    "isAvailable": true,
+    "imagesUrls": [],
+    "hotelId": 1
+  }
+}
+```
+
+---
+
+### 3. Get Rooms by Hotel
+
+Retrieve all rooms for a specific hotel.
+
+**Endpoint:** `GET /api/Room/hotel/{hotelId}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `hotelId` (integer): Hotel ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Rooms for hotel 1 retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [...]
+}
+```
+
+---
+
+### 4. Add Room
+
+Create a new room. **Admin or Manager access required.**
+
+**Endpoint:** `POST /api/Room/add`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Body:**
+```json
+{
+  "roomNumber": "101",
+  "price": 150.00,
+  "capacity": 2,
+  "isAvailable": true,
+  "imagesUrls": ["https://example.com/room1.jpg"],
+  "hotelId": 1
+}
+```
+
+**Validation Rules:**
+- `roomNumber`: Required
+- `price`: Required, must be greater than 0
+- `capacity`: Required, between 1 and 20
+- `isAvailable`: Optional, defaults to true
+- `imagesUrls`: Optional
+- `hotelId`: Required, must reference existing hotel
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room added successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {...}
+}
+```
+
+---
+
+### 5. Update Room
+
+Update an existing room. **Admin or Manager access required.**
+
+**Endpoint:** `PATCH /api/Room/edit/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Request Body:** Same as Add Room
+
+---
+
+### 6. Delete Room
+
+Delete a room. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /api/Room/delete/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room deleted successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": null
+}
+```
+
+---
+
+## Reservation Endpoints
+
+### 1. Get All Reservations
+
+Retrieve all reservations. **Admin or Manager access required.**
+
+**Endpoint:** `GET /api/Reservation`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "All reservations retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [
+    {
+      "id": 1,
+      "checkIn": "2026-02-01T00:00:00",
+      "checkOut": "2026-02-05T00:00:00",
+      "numberOfGuests": 2,
+      "status": 0,
+      "userId": "user-id",
+      "rooms": [...]
+    }
+  ]
+}
+```
+
+**Status Values:**
+- `0`: Pending
+- `1`: Confirmed
+- `2`: Declined
+- `3`: CheckIn
+- `4`: CheckOut
+
+---
+
+### 2. Get Reservation by ID
+
+Retrieve a specific reservation.
+
+**Endpoint:** `GET /api/Reservation/{id}`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id` (integer): Reservation ID
+
+---
+
+### 3. Get My Reservations
+
+Retrieve current user's reservations.
+
+**Endpoint:** `GET /api/Reservation/my`
+
+**Authentication:** Required
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "User reservations retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [...]
+}
+```
+
+---
+
+### 4. Create Reservation
+
+Create a new reservation.
+
+**Endpoint:** `POST /api/Reservation/create`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "checkIn": "2026-02-01T00:00:00",
+  "checkOut": "2026-02-05T00:00:00",
+  "numberOfGuests": 2,
+  "roomIds": [1, 2]
+}
+```
+
+**Validation Rules:**
+- `checkIn`: Required, cannot be in the past
+- `checkOut`: Required, must be after checkIn
+- `numberOfGuests`: Required, between 1 and 50
+- `roomIds`: Required, array of room IDs to reserve
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Reservation created successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {...}
+}
+```
+
+**Error Responses:**
+- `400`: "Check-in date must be before check-out date"
+- `400`: "Check-in date cannot be in the past"
+- `400`: "Room with ID {id} not found"
+- `400`: "Room {number} is not available"
+
+---
+
+### 5. Update Reservation
+
+Update an existing reservation. **Admin or Manager access required.**
+
+**Endpoint:** `PATCH /api/Reservation/edit/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Reservation ID
+
+**Request Body:**
+```json
+{
+  "checkIn": "2026-02-01T00:00:00",
+  "checkOut": "2026-02-05T00:00:00",
+  "numberOfGuests": 3,
+  "status": 1,
+  "roomIds": [1, 2]
+}
+```
+
+---
+
+### 6. Update Reservation Status
+
+Change reservation status. **Admin or Manager access required.**
+
+**Endpoint:** `PATCH /api/Reservation/status/{id}?status={status}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Reservation ID
+
+**Query Parameters:**
+- `status` (integer): New status value (0-4)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Reservation status updated to Confirmed",
+  "isSuccess": true,
+  "errors": null,
+  "data": {...}
+}
+```
+
+---
+
+### 7. Cancel Reservation
+
+Cancel a reservation (sets status to Declined).
+
+**Endpoint:** `DELETE /api/Reservation/cancel/{id}`
+
+**Authentication:** Required
+
+**URL Parameters:**
+- `id` (integer): Reservation ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Reservation cancelled successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": null
+}
+```
+
+---
+
 ## HTTP Status Codes
 
 The API uses standard HTTP status codes:
