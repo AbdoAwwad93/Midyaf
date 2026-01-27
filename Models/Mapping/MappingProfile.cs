@@ -10,6 +10,7 @@ namespace Midyaf.Models.Mapping
         {
             CreateMap<Hotel,HotelDTO>().ReverseMap();
             CreateMap<AppUser, RegisterDTO>().ReverseMap();
+            CreateMap<Room, RoomDTO>().ReverseMap();
         }
     }
 }
