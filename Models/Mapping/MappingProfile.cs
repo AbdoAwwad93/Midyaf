@@ -1,9 +1,8 @@
 ﻿using AutoMapper;
-using Midyaf.Core.DTOs;
-using Midyaf.DTOs;
+using Midyaf.Models.DTOs;
 using Midyaf.Models;
 
-namespace Midyaf.Infrastructure.Mapping
+namespace Midyaf.Models.Mapping
 {
     public class MappingProfile:Profile
     {

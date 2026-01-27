@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using Midyaf.Core.Enums;
 using Midyaf.Models;
+using Midyaf.Models.Enums;
 
-namespace Midyaf.Infrastructure.Data;
+namespace Midyaf.Data;
 
 public  class IdentityDataInitializer
 {
@@ -10,7 +10,7 @@ public  class IdentityDataInitializer
     {
         if (!await roleManager.RoleExistsAsync("Admin"))
         {
-            await roleManager.CreateAsync(new IdentityRole("Amdin"));
+            await roleManager.CreateAsync(new IdentityRole("Admin"));
         }
 
         if (!await roleManager.RoleExistsAsync("Manager"))
@@ -25,8 +25,8 @@ public  class IdentityDataInitializer
     }
     public static async Task SeedAdmin(UserManager<AppUser> userManager)
     {
-        var IsExists = userManager.FindByEmailAsync("admin@midyaf.com");
-        if(IsExists == null)
+        var user = await userManager.FindByEmailAsync("admin@midyaf.com");
+        if(user == null)
         {
             var admin = new AppUser
             {

@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using Midyaf.Core.Enums;
+using Midyaf.Models.Enums;
 
 namespace Midyaf.Models;
 

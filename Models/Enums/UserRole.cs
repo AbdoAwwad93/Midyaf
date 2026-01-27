@@ -1,4 +1,4 @@
-﻿namespace Midyaf.Core.Enums
+﻿namespace Midyaf.Models.Enums
 {
     public enum UserRole
     {

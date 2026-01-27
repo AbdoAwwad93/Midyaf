@@ -1,4 +1,4 @@
-namespace Midyaf.Core.Interfaces;
+namespace Midyaf.Repository;
 
 public interface IGenericRepository<T> where T:class
 {

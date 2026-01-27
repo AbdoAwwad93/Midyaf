@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Midyaf.Core.DTOs
+namespace Midyaf.Models.DTOs
 {
     public class HotelDTO
     {

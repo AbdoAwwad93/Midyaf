@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Midyaf.Core.Interfaces;
-using Midyaf.Infrastructure.Data;
-using Midyaf.Infrastructure.Mapping;
-using Midyaf.Infrastructure.repository;
 using Midyaf.Models;
 using AutoMapper;
 using System.Threading.Tasks;
+using Midyaf.Data;
+using Midyaf.UnitOfWork;
+using Midyaf.Models.Mapping;
+using Midyaf;
+using Midyaf.Repository;
 
 namespace Midyaf;
 

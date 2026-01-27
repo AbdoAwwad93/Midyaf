@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Midyaf.Core.DTOs;
-using Midyaf.Core.Interfaces;
 using Midyaf.Models;
+using Midyaf.Models.DTOs;
+using Midyaf.UnitOfWork;
 using System.Security.Cryptography.X509Certificates;
 
 namespace Midyaf.Controllers

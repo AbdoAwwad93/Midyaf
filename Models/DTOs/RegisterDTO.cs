@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Midyaf.DTOs;
+namespace Midyaf.Models.DTOs;
 
 public class RegisterDTO
 {

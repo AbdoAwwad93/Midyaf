@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Midyaf.Infrastructure.Data.Migrations
+namespace Midyaf.Data.Migrations
 {
     /// <inheritdoc />
     public partial class Add_Roles : Migration

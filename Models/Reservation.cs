@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using Midyaf.Enums;
+using Midyaf.Models.Enums;
 
 namespace Midyaf.Models;
 

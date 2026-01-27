@@ -1,7 +1,7 @@
+using Midyaf.Data;
 using Midyaf.Models;
-using Midyaf.Core.Interfaces;
-using Midyaf.Infrastructure.repository;
-namespace Midyaf.Infrastructure.Data;
+using Midyaf.Repository;
+namespace Midyaf.UnitOfWork;
 
 public class UnitOfwork:IUnitOfWork
 {

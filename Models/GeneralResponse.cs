@@ -1,4 +1,4 @@
-namespace Midyaf;
+namespace Midyaf.Models;
 public class GeneralResponse
 {
     public string? Message { get; set; }

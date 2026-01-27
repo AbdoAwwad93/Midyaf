@@ -1,6 +1,7 @@
 using Midyaf.Models;
+using Midyaf.Repository;
 
-namespace Midyaf.Core.Interfaces;
+namespace Midyaf.UnitOfWork;
 
 public interface IUnitOfWork:IDisposable
 {

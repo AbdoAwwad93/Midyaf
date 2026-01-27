@@ -7,10 +7,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Midyaf.Core.DTOs;
-using Midyaf.Core.Enums;
-using Midyaf.DTOs;
 using Midyaf.Models;
+using Midyaf.Models.DTOs;
+using Midyaf.Models.Enums;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Midyaf.Controllers;

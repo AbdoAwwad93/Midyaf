@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Midyaf.Infrastructure.Data;
+using Midyaf.Data;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Midyaf.Infrastructure.Data.Migrations
+namespace Midyaf.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250903034825_Init")]
-    partial class Init
+    [Migration("20251021142812_Add_Roles")]
+    partial class Add_Roles
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -251,11 +251,17 @@ namespace Midyaf.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ManagerId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ManagerId");
 
                     b.ToTable("Hotels");
                 });
@@ -413,6 +419,10 @@ namespace Midyaf.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasDiscriminator().HasValue("AppUser");
                 });
 
@@ -465,6 +475,17 @@ namespace Midyaf.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Midyaf.Models.Hotel", b =>
+                {
+                    b.HasOne("Midyaf.Models.AppUser", "Manager")
+                        .WithMany("ManagedHotels")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("Midyaf.Models.Reservation", b =>
@@ -538,6 +559,8 @@ namespace Midyaf.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("Midyaf.Models.AppUser", b =>
                 {
+                    b.Navigation("ManagedHotels");
+
                     b.Navigation("Reservations");
 
                     b.Navigation("Reviews");

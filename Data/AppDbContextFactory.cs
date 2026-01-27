@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
-namespace Midyaf.Infrastructure.Data;
+namespace Midyaf.Data;
 
 public class AppDbContextFactory:IDesignTimeDbContextFactory<AppDbContext>
 {

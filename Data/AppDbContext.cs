@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Midyaf.Core.Enums;
 using Midyaf.Models;
 
-namespace Midyaf.Infrastructure.Data;
+namespace Midyaf.Data;
 
 public class AppDbContext:IdentityDbContext
 {
