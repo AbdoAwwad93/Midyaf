@@ -1,96 +1,64 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Midyaf.Models;
 using Midyaf.Models.DTOs;
-using Midyaf.UnitOfWork;
-using System.Security.Cryptography.X509Certificates;
+using Midyaf.Services.Interfaces;
 
-namespace Midyaf.Controllers
+namespace Midyaf.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class HotelController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class HotelController : ControllerBase
+    private readonly IHotelService _hotelService;
+
+    public HotelController(IHotelService hotelService)
     {
-        private readonly IUnitOfWork unitOfWork;
-        private readonly IMapper mapper;
+        _hotelService = hotelService;
+    }
 
-        public HotelController(IUnitOfWork unitOfWork, IMapper mapper)
-        {
-            this.unitOfWork = unitOfWork;
-            this.mapper = mapper;
-        }
-        [HttpGet("/hotel")]
+    [HttpGet("/hotel")]
+    public async Task<IActionResult> GetAllHotels()
+    {
+        var response = await _hotelService.GetAllHotelsAsync();
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
 
-        public async Task<IActionResult> GetAllHotels()
-        {
-            var response = new GeneralResponse();
-            var hotels = await unitOfWork.Hotels.GetAllAsync();
-            if (hotels != null)
-            {
-                response.SetResponse("All hotels retrived successfully", true, Data: hotels);
-                return Ok(response);
-            }
-            response.SetResponse("Error occured while retriving hotels", false);
-            return BadRequest(response);
-        }
-        [HttpPost("/hotel/add")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Add(HotelDTO hotelDto)
-        {
-            var response = new GeneralResponse();
-            if (!ModelState.IsValid)
-            {
-                response.SetResponse("Invalid Data", false);
-                return BadRequest(response);
-            }
-            var hotel = mapper.Map<Hotel>(hotelDto);
-            await unitOfWork.Hotels.AddAsync(hotel);
-            await unitOfWork.SaveAsync();
-            response.SetResponse("Hotel added successfully", true, hotel);
+    [HttpGet("/hotel/{id:int}")]
+    public async Task<IActionResult> GetHotelById(int id)
+    {
+        var response = await _hotelService.GetHotelByIdAsync(id);
+        return response.IsSuccess ? Ok(response) : NotFound(response);
+    }
 
-            return Ok(response);
-        }
-        [HttpPatch("/hotel/edit/{id:int}")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> Edit(int id, HotelDTO hotelDto)
+    [HttpPost("/hotel/add")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Add(HotelDTO hotelDto)
+    {
+        if (!ModelState.IsValid)
         {
-            var response = new GeneralResponse();
-            if (!ModelState.IsValid)
-            {
-                response.SetResponse("invalid data", false);
-                return BadRequest(response);
-            }
-            var hotel = await unitOfWork.Hotels.GetByIdAsync(id);
-            if(hotel== null)
-            {
-                response.SetResponse("No hotel existed with this data", false);
-                return BadRequest(response);
-            }
-            mapper.Map(hotelDto,hotel);
-            await unitOfWork.Hotels.UpdateAsync(hotel);
-            await unitOfWork.SaveAsync();
-            response.SetResponse("Hotel edited successfully", true,Data:hotel);
-            return Ok(response);
+            return BadRequest(ModelState);
         }
-        [HttpDelete("hotel/delete/{id:int}")]
-        [Authorize(Roles = "Admin,Manager")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var response  = new GeneralResponse();
-            var hotel = await unitOfWork.Hotels.GetByIdAsync(id);
-            if (hotel == null)
-            {
-                response.SetResponse("there is no hotel with this data", false);
-                return BadRequest(response);
-            }
-            await unitOfWork.Hotels.RemoveAsync(hotel);
-            await unitOfWork.SaveAsync();
-            response.SetResponse("Hotel removed successfully", true);
-            return Ok(response);
-        }
+        var response = await _hotelService.AddHotelAsync(hotelDto);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
 
+    [HttpPatch("/hotel/edit/{id:int}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> Edit(int id, HotelDTO hotelDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var response = await _hotelService.UpdateHotelAsync(id, hotelDto);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpDelete("hotel/delete/{id:int}")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var response = await _hotelService.DeleteHotelAsync(id);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }

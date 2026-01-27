@@ -9,6 +9,8 @@ using Midyaf.UnitOfWork;
 using Midyaf.Models.Mapping;
 using Midyaf;
 using Midyaf.Repository;
+using Midyaf.Services.Implementations;
+using Midyaf.Services.Interfaces;
 
 namespace Midyaf;
 
@@ -43,7 +45,12 @@ public class Program
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
         }).AddEntityFrameworkStores<AppDbContext>();
-        builder.Services.AddAutoMapper(typeof(MappingProfile));    
+        builder.Services.AddAutoMapper(typeof(MappingProfile));
+        
+        // Register Services
+        builder.Services.AddScoped<IHotelService, HotelService>();
+        builder.Services.AddScoped<IAccountService, AccountService>();
+        
         var app = builder.Build();
         using (var scop = app.Services.CreateScope())
         {
