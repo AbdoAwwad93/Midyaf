@@ -93,6 +93,7 @@ public class Program
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IReservationService, ReservationService>();
         builder.Services.AddScoped<IReviewService, ReviewService>();
+        builder.Services.AddScoped<IEmailService, EmailService>();
         
         var app = builder.Build();
         using (var scop = app.Services.CreateScope())
