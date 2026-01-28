@@ -8,4 +8,7 @@ public interface IAccountService
 {
     Task<GeneralResponse> RegisterAsync(RegisterDTO registerDto, UserRole role);
     Task<GeneralResponse> LoginAsync(LoginDTO loginDto);
+    Task<GeneralResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDto);
+    Task<GeneralResponse> ResetPasswordAsync(ResetPasswordDTO resetPasswordDto);
 }
+

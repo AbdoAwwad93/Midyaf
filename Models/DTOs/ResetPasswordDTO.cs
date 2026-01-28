@@ -1,11 +1,22 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Midyaf.Models.DTOs
+namespace Midyaf.Models.DTOs;
+
+public class ResetPasswordDTO
 {
-    public class ResetPasswordDTO
-    {
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
-    }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; } = string.Empty;
+    
+    [Required]
+    [StringLength(6, MinimumLength = 6)]
+    public string Otp { get; set; } = string.Empty;
+    
+    [Required]
+    [MinLength(6)]
+    public string NewPassword { get; set; } = string.Empty;
+    
+    [Required]
+    [Compare("NewPassword")]
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

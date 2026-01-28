@@ -62,4 +62,26 @@ public class AccountController : ControllerBase
         var response = await _accountService.LoginAsync(loginDto);
         return response.IsSuccess ? Ok(response) : Unauthorized(response);
     }
+
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordDTO forgotPasswordDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var response = await _accountService.ForgotPasswordAsync(forgotPasswordDto);
+        return Ok(response);
+    }
+
+    [HttpPost("reset-password")]
+    public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDto)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+        var response = await _accountService.ResetPasswordAsync(resetPasswordDto);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
 }

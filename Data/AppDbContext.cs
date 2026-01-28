@@ -11,6 +11,7 @@ public class AppDbContext:IdentityDbContext
     public DbSet<Room>  Rooms { get; set; }
     public DbSet<Review>  Reviews { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<PasswordResetOtp> PasswordResetOtps { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
         :base(options)

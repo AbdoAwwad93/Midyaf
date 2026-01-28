@@ -16,12 +16,12 @@ public class EmailService : IEmailService
 
     public EmailService()
     {
-        _smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
-        _smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT"));
-        _smtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME");
-        _smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD");
-        _fromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL");
-        _fromName = Environment.GetEnvironmentVariable("SMTP_FROM_NAME");
+        _smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST") ?? "smtp.gmail.com";
+        _smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
+        _smtpUsername = Environment.GetEnvironmentVariable("SMTP_USERNAME") ?? "";
+        _smtpPassword = Environment.GetEnvironmentVariable("SMTP_PASSWORD") ?? "";
+        _fromEmail = Environment.GetEnvironmentVariable("SMTP_FROM_EMAIL") ?? "";
+        _fromName = Environment.GetEnvironmentVariable("SMTP_FROM_NAME") ?? "Midyaf";
     }
 
     public async Task<bool> SendEmailAsync(string to, string subject, string body, bool isHtml = true)
@@ -66,10 +66,10 @@ public class EmailService : IEmailService
         return await SendEmailAsync(to, subject, body);
     }
 
-    public async Task<bool> SendPasswordResetAsync(string to, string resetToken)
+    public async Task<bool> SendOtpAsync(string to, string otp)
     {
-        var subject = "Password Reset Request - Midyaf";
-        var body = GetPasswordResetTemplate(resetToken);
+        var subject = "Password Reset OTP - Midyaf";
+        var body = GetOtpTemplate(otp);
         return await SendEmailAsync(to, subject, body);
     }
 
@@ -156,10 +156,8 @@ public class EmailService : IEmailService
 </html>";
     }
 
-    private string GetPasswordResetTemplate(string resetToken)
+    private string GetOtpTemplate(string otp)
     {
-        var resetUrl = $"{Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "http://localhost:3000"}/reset-password?token={resetToken}";
-        
         return $@"
 <!DOCTYPE html>
 <html>
@@ -168,8 +166,9 @@ public class EmailService : IEmailService
         body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
         .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
         .header {{ background: #2563eb; color: white; padding: 20px; text-align: center; }}
-        .content {{ padding: 20px; background: #f9fafb; }}
-        .button {{ display: inline-block; background: #2563eb; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 15px 0; }}
+        .content {{ padding: 20px; background: #f9fafb; text-align: center; }}
+        .otp-box {{ background: white; padding: 30px; border-radius: 8px; margin: 20px 0; }}
+        .otp-code {{ font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #2563eb; }}
         .footer {{ text-align: center; padding: 20px; color: #666; font-size: 12px; }}
     </style>
 </head>
@@ -180,12 +179,12 @@ public class EmailService : IEmailService
         </div>
         <div class='content'>
             <p>We received a request to reset your password.</p>
-            <p>Click the button below to reset your password:</p>
-            <p style='text-align: center;'>
-                <a href='{resetUrl}' class='button'>Reset Password</a>
-            </p>
-            <p>If you didn't request this, please ignore this email.</p>
-            <p><small>This link will expire in 1 hour.</small></p>
+            <p>Use the following OTP code to reset your password:</p>
+            <div class='otp-box'>
+                <span class='otp-code'>{otp}</span>
+            </div>
+            <p>This code will expire in <strong>10 minutes</strong>.</p>
+            <p><small>If you didn't request this, please ignore this email.</small></p>
         </div>
         <div class='footer'>
             <p>&copy; {DateTime.Now.Year} Midyaf. All rights reserved.</p>
