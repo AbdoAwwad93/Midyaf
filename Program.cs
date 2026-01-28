@@ -12,7 +12,11 @@ using Midyaf.Repository;
 using Midyaf.Services.Implementations;
 using Midyaf.Services.Interfaces;
 using System.Text;
+using System.Threading.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.RateLimiting;
+
 namespace Midyaf;
 
 public class Program
@@ -23,6 +27,22 @@ public class Program
 
         // Add services to the container.
         DotNetEnv.Env.Load();
+        
+        builder.Services.AddRateLimiter(options =>
+        {
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: httpContext.User.Identity?.Name ?? httpContext.Request.Headers.Host.ToString(),
+                    factory: partition => new FixedWindowRateLimiterOptions
+                    {
+                        AutoReplenishment = true,
+                        PermitLimit = 100,
+                        QueueLimit = 0,
+                        Window = TimeSpan.FromMinutes(1)
+                    }));
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+        });
+        
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(option =>
         {
             option.SuppressModelStateInvalidFilter = false;
@@ -50,11 +70,11 @@ public class Program
         var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
         builder.Services.AddAuthentication(options =>
         {
-            options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
         .AddJwtBearer(options =>
-        {
+        { 
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = false,
@@ -92,6 +112,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        
+        app.UseRateLimiter();
 
         app.UseAuthentication();
         app.UseAuthorization();
