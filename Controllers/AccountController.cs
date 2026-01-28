@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
 using Midyaf.Services.Interfaces;
@@ -63,6 +64,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("PasswordReset")]
     public async Task<IActionResult> ForgotPassword(ForgotPasswordDTO forgotPasswordDto)
     {
         if (!ModelState.IsValid)
@@ -74,6 +76,7 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("PasswordReset")]
     public async Task<IActionResult> ResetPassword(ResetPasswordDTO resetPasswordDto)
     {
         if (!ModelState.IsValid)
@@ -84,3 +87,4 @@ public class AccountController : ControllerBase
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }
+
