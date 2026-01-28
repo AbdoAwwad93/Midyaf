@@ -763,6 +763,84 @@ Cancel a reservation (sets status to Declined).
 
 ---
 
+## Review Endpoints
+
+### 1. Get All Reviews
+
+Retrieve all reviews.
+
+**Endpoint:** `GET /api/Review`
+
+**Authentication:** Not required
+
+---
+
+### 2. Get Review by ID
+
+**Endpoint:** `GET /api/Review/{id}`
+
+**Authentication:** Not required
+
+---
+
+### 3. Get Reviews by Hotel
+
+**Endpoint:** `GET /api/Review/hotel/{hotelId}`
+
+**Authentication:** Not required
+
+---
+
+### 4. Get My Reviews
+
+**Endpoint:** `GET /api/Review/my`
+
+**Authentication:** Required
+
+---
+
+### 5. Create Review
+
+**Endpoint:** `POST /api/Review/add`
+
+**Authentication:** Required
+
+**Request Body:**
+```json
+{
+  "comment": "Great hotel, excellent service!",
+  "rate": 5,
+  "hotelId": 1
+}
+```
+
+**Validation Rules:**
+- `comment`: Optional
+- `rate`: Required, between 1 and 5
+- `hotelId`: Required, must reference existing hotel
+
+---
+
+### 6. Update Review
+
+Update your own review.
+
+**Endpoint:** `PATCH /api/Review/edit/{id}`
+
+**Authentication:** Required (owner only)
+
+---
+
+### 7. Delete Review
+
+Delete your own review.
+
+**Endpoint:** `DELETE /api/Review/delete/{id}`
+
+**Authentication:** Required (owner only)
+
+---
+
 ## HTTP Status Codes
 
 The API uses standard HTTP status codes:

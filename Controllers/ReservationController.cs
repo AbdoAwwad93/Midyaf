@@ -39,7 +39,7 @@ public class ReservationController : ControllerBase
     public async Task<IActionResult> GetMyReservations()
     {
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
+        if (userId == null)
         {
             return Unauthorized();
         }
@@ -56,7 +56,7 @@ public class ReservationController : ControllerBase
             return BadRequest(ModelState);
         }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(userId))
+        if (userId == null)
         {
             return Unauthorized();
         }
