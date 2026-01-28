@@ -41,7 +41,6 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("signup/admin")]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> SignUpAdmin(RegisterDTO registerDto)
     {
         if (!ModelState.IsValid)
