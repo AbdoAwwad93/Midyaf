@@ -23,6 +23,13 @@ public class HotelController : ControllerBase
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 
+    [HttpGet("/hotel/search")]
+    public async Task<IActionResult> SearchHotels([FromQuery] HotelSearchDTO searchDto)
+    {
+        var response = await _hotelService.SearchHotelsAsync(searchDto);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
     [HttpGet("/hotel/{id:int}")]
     public async Task<IActionResult> GetHotelById(int id)
     {

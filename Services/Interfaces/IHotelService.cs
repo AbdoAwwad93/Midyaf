@@ -10,4 +10,5 @@ public interface IHotelService
     Task<GeneralResponse> AddHotelAsync(HotelDTO hotelDto);
     Task<GeneralResponse> UpdateHotelAsync(int id, HotelDTO hotelDto);
     Task<GeneralResponse> DeleteHotelAsync(int id);
+    Task<GeneralResponse> SearchHotelsAsync(HotelSearchDTO searchDto);
 }

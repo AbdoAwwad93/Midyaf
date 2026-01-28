@@ -1,5 +1,7 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using Midyaf.Data;
+
 namespace Midyaf.Repository;
 
 public class GenericRepository<T>:IGenericRepository<T> where T:class
@@ -37,5 +39,15 @@ public class GenericRepository<T>:IGenericRepository<T> where T:class
     {
         var entities = await _dbset.ToListAsync();
         return entities;
+    }
+
+    public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate)
+    {
+        return await _dbset.Where(predicate).ToListAsync();
+    }
+
+    public IQueryable<T> GetQueryable()
+    {
+        return _dbset.AsQueryable();
     }
 }
