@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Identity;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
@@ -11,11 +12,19 @@ public class ReservationService : IReservationService
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IEmailService _emailService;
+    private readonly UserManager<AppUser> _userManager;
 
-    public ReservationService(IUnitOfWork unitOfWork, IMapper mapper)
+    public ReservationService(
+        IUnitOfWork unitOfWork, 
+        IMapper mapper,
+        IEmailService emailService,
+        UserManager<AppUser> userManager)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _emailService = emailService;
+        _userManager = userManager;
     }
 
     public async Task<GeneralResponse> GetAllReservationsAsync()
@@ -97,6 +106,12 @@ public class ReservationService : IReservationService
 
         await _unitOfWork.Reservations.AddAsync(reservation);
         await _unitOfWork.SaveAsync();
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user?.Email != null)
+        {
+            await _emailService.SendBookingConfirmationAsync(user.Email, reservation);
+        }
+
         response.SetResponse("Reservation created successfully", true, reservation);
         return response;
     }
@@ -137,11 +152,29 @@ public class ReservationService : IReservationService
             return response;
         }
 
+        var previousStatus = reservation.Status;
         reservation.Status = status;
         reservation.UpdatedAt = DateTime.UtcNow;
 
         await _unitOfWork.Reservations.UpdateAsync(reservation);
         await _unitOfWork.SaveAsync();
+
+        if (reservation.UserId != null)
+        {
+            var user = await _userManager.FindByIdAsync(reservation.UserId);
+            if (user?.Email != null)
+            {
+                if (status == Status.Confirmed && previousStatus != Status.Confirmed)
+                {
+                    await _emailService.SendBookingConfirmationAsync(user.Email, reservation);
+                }
+                if (status == Status.Declined)
+                {
+                    await _emailService.SendBookingCancellationAsync(user.Email, reservation);
+                }
+            }
+        }
+
         response.SetResponse($"Reservation status updated to {status}", true, Data: reservation);
         return response;
     }
@@ -161,6 +194,16 @@ public class ReservationService : IReservationService
 
         await _unitOfWork.Reservations.UpdateAsync(reservation);
         await _unitOfWork.SaveAsync();
+
+        if (reservation.UserId != null)
+        {
+            var user = await _userManager.FindByIdAsync(reservation.UserId);
+            if (user?.Email != null)
+            {
+                await _emailService.SendBookingCancellationAsync(user.Email, reservation);
+            }
+        }
+
         response.SetResponse("Reservation cancelled successfully", true);
         return response;
     }
