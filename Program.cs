@@ -11,7 +11,8 @@ using Midyaf;
 using Midyaf.Repository;
 using Midyaf.Services.Implementations;
 using Midyaf.Services.Interfaces;
-
+using System.Text;
+using Microsoft.IdentityModel.Tokens;
 namespace Midyaf;
 
 public class Program
@@ -45,6 +46,25 @@ public class Program
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
         }).AddEntityFrameworkStores<AppDbContext>();
+        
+        var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+        builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(securityKey!))
+            };
+        });
         builder.Services.AddAutoMapper(typeof(MappingProfile));
         
         // Register Services
@@ -73,6 +93,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
 
