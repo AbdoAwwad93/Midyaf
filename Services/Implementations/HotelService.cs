@@ -169,5 +169,51 @@ public class HotelService : IHotelService
         response.SetResponse($"Found {totalCount} hotels", true, result);
         return response;
     }
-}
 
+    public async Task<GeneralResponse> AddHotelImageAsync(int hotelId, string imageUrl)
+    {
+        var response = new GeneralResponse();
+        var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
+        if (hotel == null)
+        {
+            response.SetResponse("Hotel not found", false);
+            return response;
+        }
+
+        if (hotel.Images == null)
+        {
+            hotel.Images = new List<string>();
+        }
+
+        hotel.Images.Add(imageUrl);
+        await _unitOfWork.Hotels.UpdateAsync(hotel);
+        await _unitOfWork.SaveAsync();
+
+        response.SetResponse("Image added successfully", true, Data: hotel.Images);
+        return response;
+    }
+
+    public async Task<GeneralResponse> RemoveHotelImageAsync(int hotelId, string imageUrl)
+    {
+        var response = new GeneralResponse();
+        var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
+        if (hotel == null)
+        {
+            response.SetResponse("Hotel not found", false);
+            return response;
+        }
+
+        if (hotel.Images == null || !hotel.Images.Contains(imageUrl))
+        {
+            response.SetResponse("Image not found in hotel", false);
+            return response;
+        }
+
+        hotel.Images.Remove(imageUrl);
+        await _unitOfWork.Hotels.UpdateAsync(hotel);
+        await _unitOfWork.SaveAsync();
+
+        response.SetResponse("Image removed successfully", true, Data: hotel.Images);
+        return response;
+    }
+}

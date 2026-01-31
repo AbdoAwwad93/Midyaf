@@ -106,6 +106,7 @@ public class Program
         builder.Services.AddScoped<IReservationService, ReservationService>();
         builder.Services.AddScoped<IReviewService, ReviewService>();
         builder.Services.AddScoped<IEmailService, EmailService>();
+        builder.Services.AddScoped<IFileService, FileService>();
         
         var app = builder.Build();
         using (var scop = app.Services.CreateScope())
@@ -125,7 +126,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
-        
+        app.UseStaticFiles();
         app.UseRateLimiter();
 
         app.UseAuthentication();

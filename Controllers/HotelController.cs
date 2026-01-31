@@ -10,10 +10,12 @@ namespace Midyaf.Controllers;
 public class HotelController : ControllerBase
 {
     private readonly IHotelService _hotelService;
+    private readonly IFileService _fileService;
 
-    public HotelController(IHotelService hotelService)
+    public HotelController(IHotelService hotelService, IFileService fileService)
     {
         _hotelService = hotelService;
+        _fileService = fileService;
     }
 
     [HttpGet("/hotel")]
@@ -66,6 +68,29 @@ public class HotelController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _hotelService.DeleteHotelAsync(id);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpPost("/hotel/{id:int}/images")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> UploadImage(int id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded");
+        }
+
+        var imageUrl = await _fileService.SaveFileAsync(file, "hotels");
+        var response = await _hotelService.AddHotelImageAsync(id, imageUrl);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpDelete("/hotel/{id:int}/images")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> DeleteImage(int id, [FromQuery] string imageUrl)
+    {
+        _fileService.DeleteFile(imageUrl, "hotels");
+        var response = await _hotelService.RemoveHotelImageAsync(id, imageUrl);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }
