@@ -1,3 +1,48 @@
+# Midyaf API Documentation
+
+## Table of Contents
+- [Authentication](#authentication)
+- [Response Format](#response-format)
+- [Account Endpoints](#account-endpoints)
+  - [1. User Registration](#1-user-registration)
+  - [2. Manager Registration](#2-manager-registration)
+  - [3. Admin Registration](#3-admin-registration)
+  - [4. User Login](#4-user-login)
+  - [5. Forgot Password](#5-forgot-password)
+  - [6. Reset Password](#6-reset-password)
+- [Hotel Endpoints](#hotel-endpoints)
+  - [1. Get All Hotels](#1-get-all-hotels)
+  - [2. Add Hotel](#2-add-hotel)
+  - [3. Update Hotel](#3-update-hotel)
+  - [4. Delete Hotel](#4-delete-hotel)
+  - [5. Search Hotels](#5-search-hotels)
+  - [6. Upload Hotel Image](#6-upload-hotel-image)
+  - [7. Delete Hotel Image](#7-delete-hotel-image)
+- [Room Endpoints](#room-endpoints)
+  - [1. Get All Rooms](#1-get-all-rooms)
+  - [2. Get Room by ID](#2-get-room-by-id)
+  - [3. Get Rooms by Hotel](#3-get-rooms-by-hotel)
+  - [4. Add Room](#4-add-room)
+  - [5. Update Room](#5-update-room)
+  - [6. Delete Room](#6-delete-room)
+  - [7. Upload Room Image](#7-upload-room-image)
+  - [8. Delete Room Image](#8-delete-room-image)
+- [Reservation Endpoints](#reservation-endpoints)
+  - [1. Get All Reservations](#1-get-all-reservations)
+  - [2. Get Reservation by ID](#2-get-reservation-by-id)
+  - [3. Get My Reservations](#3-get-my-reservations)
+  - [4. Create Reservation](#4-create-reservation)
+  - [5. Update Reservation](#5-update-reservation)
+  - [6. Update Reservation Status](#6-update-reservation-status)
+  - [7. Cancel Reservation](#7-cancel-reservation)
+- [Review Endpoints](#review-endpoints)
+  - [1. Get All Reviews](#1-get-all-reviews)
+  - [2. Get Review by ID](#2-get-review-by-id)
+  - [3. Get Reviews by Hotel](#3-get-reviews-by-hotel)
+  - [4. Get My Reviews](#4-get-my-reviews)
+
+---
+
 ## Authentication
 
 The API uses **JWT (JSON Web Tokens)** for authentication. After successful login, you will receive a JWT token that must be included in subsequent authenticated requests.
@@ -200,6 +245,63 @@ Authenticate a user and receive a JWT token.
 {
   "message": "Invalid Email or Password",
   "isSuccess": false,
+  "errors": null,
+  "data": null
+}
+```
+
+---
+
+### 5. Forgot Password
+
+Initiate password reset process by sending an OTP to the user's email.
+
+**Endpoint:** `POST /Account/forgot-password`
+
+**Authentication:** Not required
+
+**Request Body:**
+```json
+{
+  "email": "john.doe@example.com"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "If the email exists, an OTP has been sent",
+  "isSuccess": true,
+  "errors": null,
+  "data": null
+}
+```
+
+---
+
+### 6. Reset Password
+
+Reset password using the OTP received via email.
+
+**Endpoint:** `POST /Account/reset-password`
+
+**Authentication:** Not required
+
+**Request Body:**
+```json
+{
+  "email": "john.doe@example.com",
+  "otp": "123456",
+  "newPassword": "newpassword123",
+  "confirmNewPassword": "newpassword123"
+}
+```
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Password has been reset successfully",
+  "isSuccess": true,
   "errors": null,
   "data": null
 }
@@ -412,6 +514,96 @@ Authorization: Bearer <jwt-token>
 
 ---
 
+---
+
+### 5. Search Hotels
+
+Search and filter hotels.
+
+**Endpoint:** `GET /hotel/search`
+
+**Authentication:** Not required
+
+**Query Parameters:**
+- `name` (string): Search by hotel name
+- `city` (string): Search by city
+- `country` (string): Search by country
+- `checkIn` (date): YYYY-MM-DD
+- `checkOut` (date): YYYY-MM-DD
+- `numberOfGuests` (int): Number of guests
+- `minPrice` (decimal): Minimum price per night
+- `maxPrice` (decimal): Maximum price per night
+- `minRating` (double): Minimum average rating
+- `sortBy` (string): name, price, rating
+- `sortOrder` (string): asc, desc
+- `page` (int): Page number (default 1)
+- `pageSize` (int): Items per page (default 10)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Found 5 hotels",
+  "isSuccess": true,
+  "errors": null,
+  "data": {
+    "items": [...],
+    "totalCount": 5,
+    "page": 1,
+    "pageSize": 10
+  }
+}
+```
+
+---
+
+### 6. Upload Hotel Image
+
+Upload an image for a hotel. **Admin or Manager access required.**
+
+**Endpoint:** `POST /hotel/{id}/images`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Type:** `multipart/form-data`
+
+**Form Fields:**
+- `file`: The image file (jpg, jpeg, png, webp)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image added successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": ["/uploads/hotels/guid.jpg"]
+}
+```
+
+---
+
+### 7. Delete Hotel Image
+
+Delete an image from a hotel. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /hotel/{id}/images?imageUrl={imageUrl}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Query Parameters:**
+- `imageUrl` (string): The relative URL of the image to delete
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image removed successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": []
+}
+```
+
+---
+
 ## Room Endpoints
 
 ### 1. Get All Rooms
@@ -571,6 +763,56 @@ Delete a room. **Admin or Manager access required.**
   "isSuccess": true,
   "errors": null,
   "data": null
+}
+```
+
+---
+
+---
+
+### 7. Upload Room Image
+
+Upload an image for a room. **Admin or Manager access required.**
+
+**Endpoint:** `POST /api/Room/{id}/images`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Type:** `multipart/form-data`
+
+**Form Fields:**
+- `file`: The image file (jpg, jpeg, png, webp)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image added successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": ["/uploads/rooms/guid.jpg"]
+}
+```
+
+---
+
+### 8. Delete Room Image
+
+Delete an image from a room. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /api/Room/{id}/images?imageUrl={imageUrl}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Query Parameters:**
+- `imageUrl` (string): The relative URL of the image to delete
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image removed successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": []
 }
 ```
 
