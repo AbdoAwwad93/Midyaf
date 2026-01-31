@@ -11,4 +11,6 @@ public interface IRoomService
     Task<GeneralResponse> AddRoomAsync(RoomDTO roomDto);
     Task<GeneralResponse> UpdateRoomAsync(int id, RoomDTO roomDto);
     Task<GeneralResponse> DeleteRoomAsync(int id);
+    Task<GeneralResponse> AddRoomImageAsync(int roomId, string imageUrl);
+    Task<GeneralResponse> RemoveRoomImageAsync(int roomId, string imageUrl);
 }

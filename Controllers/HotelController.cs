@@ -79,7 +79,12 @@ public class HotelController : ControllerBase
         {
             return BadRequest("No file uploaded");
         }
-
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            return BadRequest("Invalid file type. Allowed types: jpg, jpeg, png, webp");
+        }
         var imageUrl = await _fileService.SaveFileAsync(file, "hotels");
         var response = await _hotelService.AddHotelImageAsync(id, imageUrl);
         return response.IsSuccess ? Ok(response) : BadRequest(response);

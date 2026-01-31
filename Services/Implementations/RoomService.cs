@@ -116,4 +116,51 @@ public class RoomService : IRoomService
         response.SetResponse("Room deleted successfully", true);
         return response;
     }
+
+    public async Task<GeneralResponse> AddRoomImageAsync(int roomId, string imageUrl)
+    {
+        var response = new GeneralResponse();
+        var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+        if (room == null)
+        {
+            response.SetResponse("Room not found", false);
+            return response;
+        }
+
+        if (room.ImagesUrls == null)
+        {
+            room.ImagesUrls = new List<string>();
+        }
+
+        room.ImagesUrls.Add(imageUrl);
+        await _unitOfWork.Rooms.UpdateAsync(room);
+        await _unitOfWork.SaveAsync();
+
+        response.SetResponse("Image added successfully", true, Data: room.ImagesUrls);
+        return response;
+    }
+
+    public async Task<GeneralResponse> RemoveRoomImageAsync(int roomId, string imageUrl)
+    {
+        var response = new GeneralResponse();
+        var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
+        if (room == null)
+        {
+            response.SetResponse("Room not found", false);
+            return response;
+        }
+
+        if (room.ImagesUrls == null || !room.ImagesUrls.Contains(imageUrl))
+        {
+            response.SetResponse("Image not found in room", false);
+            return response;
+        }
+
+        room.ImagesUrls.Remove(imageUrl);
+        await _unitOfWork.Rooms.UpdateAsync(room);
+        await _unitOfWork.SaveAsync();
+
+        response.SetResponse("Image removed successfully", true, Data: room.ImagesUrls);
+        return response;
+    }
 }

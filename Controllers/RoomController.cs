@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Midyaf.Models.DTOs;
 using Midyaf.Services.Interfaces;
 
@@ -10,10 +11,14 @@ namespace Midyaf.Controllers;
 public class RoomController : ControllerBase
 {
     private readonly IRoomService _roomService;
+    private readonly IFileService _fileService;
+    private readonly ILogger<RoomController> _logger;
 
-    public RoomController(IRoomService roomService)
+    public RoomController(IRoomService roomService, IFileService fileService, ILogger<RoomController> logger)
     {
         _roomService = roomService;
+        _fileService = fileService;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -66,6 +71,34 @@ public class RoomController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _roomService.DeleteRoomAsync(id);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+    [HttpPost("{id:int}/images")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> UploadImage(int id, IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file uploaded");
+        }
+        var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+        var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (!allowedExtensions.Contains(extension))
+        {
+            return BadRequest("Invalid file type. Allowed types: jpg, jpeg, png, webp");
+        }
+
+        var imageUrl = await _fileService.SaveFileAsync(file, "rooms");
+        var response = await _roomService.AddRoomImageAsync(id, imageUrl);
+        return response.IsSuccess ? Ok(response) : BadRequest(response);
+    }
+
+    [HttpDelete("{id:int}/images")]
+    [Authorize(Roles = "Admin,Manager")]
+    public async Task<IActionResult> DeleteImage(int id, [FromQuery] string imageUrl)
+    {
+        _fileService.DeleteFile(imageUrl, "rooms");
+        var response = await _roomService.RemoveRoomImageAsync(id, imageUrl);
         return response.IsSuccess ? Ok(response) : BadRequest(response);
     }
 }
