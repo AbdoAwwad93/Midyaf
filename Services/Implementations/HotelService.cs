@@ -133,8 +133,8 @@ public class HotelService : IHotelService
             
             query = query.Where(h => h.Rooms.Any(room => 
                 room.IsAvailable &&
-                !room.Reservation.CheckIn.Date.Equals(default) == false || 
-                (room.Reservation.CheckOut <= checkIn || room.Reservation.CheckIn >= checkOut) 
+                (room.Reservations.All(res => res.CheckIn.Date == default || 
+                    res.CheckOut <= checkIn || res.CheckIn >= checkOut))
             ));
         }
 

@@ -10,5 +10,6 @@ public interface IUnitOfWork:IDisposable
     IGenericRepository<Room> Rooms { get; }
     IGenericRepository<Reservation> Reservations { get; }
     IGenericRepository<Review> Reviews { get; }
+    IGenericRepository<RoomType> RoomTypes { get; }
     Task <int> SaveAsync();
 }

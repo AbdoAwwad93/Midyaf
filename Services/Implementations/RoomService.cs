@@ -69,6 +69,16 @@ public class RoomService : IRoomService
             return response;
         }
 
+        if (roomDto.RoomTypeId.HasValue)
+        {
+            var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(roomDto.RoomTypeId.Value);
+            if (roomType == null)
+            {
+                response.SetResponse("Room Type not found", false);
+                return response;
+            }
+        }
+
         var room = _mapper.Map<Room>(roomDto);
         await _unitOfWork.Rooms.AddAsync(room);
         await _unitOfWork.SaveAsync();
@@ -91,6 +101,16 @@ public class RoomService : IRoomService
             if (hotel == null)
             {
                 response.SetResponse("Hotel not found", false);
+                return response;
+            }
+        }
+
+        if (roomDto.RoomTypeId.HasValue)
+        {
+            var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(roomDto.RoomTypeId.Value);
+            if (roomType == null)
+            {
+                response.SetResponse("Room Type not found", false);
                 return response;
             }
         }

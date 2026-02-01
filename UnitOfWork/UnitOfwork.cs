@@ -11,6 +11,7 @@ public class UnitOfwork:IUnitOfWork
     public IGenericRepository<Room> Rooms { get; }
     public IGenericRepository<Reservation> Reservations { get; }
     public IGenericRepository<Review> Reviews { get; }
+    public IGenericRepository<RoomType> RoomTypes { get; }
 
     public UnitOfwork(AppDbContext context)
     {
@@ -20,6 +21,7 @@ public class UnitOfwork:IUnitOfWork
         Rooms = new GenericRepository<Room>(_context);
         Reservations = new GenericRepository<Reservation>(_context);
         Reviews = new GenericRepository<Review>(_context);
+        RoomTypes = new GenericRepository<RoomType>(_context);
         
     }
     

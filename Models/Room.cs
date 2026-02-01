@@ -16,7 +16,8 @@ public class Room
     public virtual AppUser  AppUser { get; set; }
     [ForeignKey("User")]
     public string UserId { get; set; }
-    public virtual Reservation Reservation { get; set; }
-    [ForeignKey("Reservation")]
-    public int ReservationId { get; set; }
+    public virtual List<Reservation> Reservations { get; set; } = new List<Reservation>();
+    [ForeignKey("RoomType")]
+    public int? RoomTypeId { get; set; }
+    public virtual RoomType? RoomType { get; set; }
 }

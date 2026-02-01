@@ -11,5 +11,6 @@ public class Hotel
     public virtual AppUser Manager { get; set; }
     public virtual List<Review>? Reviews { get; set; }
     public virtual List<Room> Rooms { get; set; }
+    public virtual List<RoomType> RoomTypes { get; set; }
     public List<string> Images { get; set; } = new List<string>();
 }

@@ -11,6 +11,7 @@ public class AppDbContext:IdentityDbContext
     public DbSet<Room>  Rooms { get; set; }
     public DbSet<Review>  Reviews { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
+    public DbSet<RoomType> RoomTypes { get; set; }
     public DbSet<PasswordResetOtp> PasswordResetOtps { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options)
@@ -37,6 +38,10 @@ public class AppDbContext:IdentityDbContext
             .WithOne(review => review.Hotel);
         builder.Entity<Reservation>().Property(reservation => reservation.Status)
             .HasConversion<string>();
+            
+        builder.Entity<Reservation>()
+            .HasMany(r => r.Rooms)
+            .WithMany(r => r.Reservations);
         builder.Entity<AppUser>().Property(user => user.Role)
             .HasConversion<string>();
     }
