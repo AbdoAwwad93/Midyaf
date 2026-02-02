@@ -27,7 +27,392 @@
   - [6. Delete Room](#6-delete-room)
   - [7. Upload Room Image](#7-upload-room-image)
   - [8. Delete Room Image](#8-delete-room-image)
+- [Room Type Endpoints](#room-type-endpoints)
+  - [1. Get All Room Types](#1-get-all-room-types)
+  - [2. Get Room Type by ID](#2-get-room-type-by-id)
+  - [3. Get Room Types by Hotel](#3-get-room-types-by-hotel)
+  - [4. Add Room Type](#4-add-room-type)
+  - [5. Update Room Type](#5-update-room-type)
+  - [6. Delete Room Type](#6-delete-room-type)
 - [Reservation Endpoints](#reservation-endpoints)
+
+...
+
+## Room Endpoints
+
+### 1. Get All Rooms
+
+Retrieve a list of all rooms.
+
+**Endpoint:** `GET /api/Room`
+
+**Authentication:** Not required
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "All rooms retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [
+    {
+      "id": 1,
+      "roomNumber": "101",
+      "price": 150.00,
+      "capacity": 2,
+      "isAvailable": true,
+      "imagesUrls": ["https://example.com/room1.jpg"],
+      "hotelId": 1,
+      "roomTypeId": 5,
+      "roomType": { "id": 5, "name": "Deluxe Suite" }
+    }
+  ]
+}
+```
+
+---
+
+### 2. Get Room by ID
+
+Retrieve a specific room by its ID.
+
+**Endpoint:** `GET /api/Room/{id}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {
+    "id": 1,
+    "roomNumber": "101",
+    "price": 150.00,
+    "capacity": 2,
+    "isAvailable": true,
+    "imagesUrls": [],
+    "hotelId": 1,
+    "roomTypeId": 5
+  }
+}
+```
+
+---
+
+### 3. Get Rooms by Hotel
+
+Retrieve all rooms for a specific hotel.
+
+**Endpoint:** `GET /api/Room/hotel/{hotelId}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `hotelId` (integer): Hotel ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Rooms for hotel 1 retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [...]
+}
+```
+
+---
+
+### 4. Add Room
+
+Create a new room. **Admin or Manager access required.**
+
+**Endpoint:** `POST /api/Room/add`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Body:**
+```json
+{
+  "roomNumber": "101",
+  "price": 150.00,
+  "capacity": 2,
+  "isAvailable": true,
+  "imagesUrls": ["https://example.com/room1.jpg"],
+  "hotelId": 1,
+  "roomTypeId": 5
+}
+```
+
+**Validation Rules:**
+- `roomNumber`: Required
+- `price`: Required, must be greater than 0
+- `capacity`: Required, between 1 and 20
+- `isAvailable`: Optional, defaults to true
+- `imagesUrls`: Optional
+- `hotelId`: Required, must reference existing hotel
+- `roomTypeId`: Optional, must reference existing room type if provided
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room added successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {...}
+}
+```
+
+---
+
+### 5. Update Room
+
+Update an existing room. **Admin or Manager access required.**
+
+**Endpoint:** `PATCH /api/Room/edit/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Request Body:** Same as Add Room
+
+---
+
+### 6. Delete Room
+
+Delete a room. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /api/Room/delete/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room deleted successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": null
+}
+```
+
+---
+
+### 7. Upload Room Image
+
+Upload an image for a room. **Admin or Manager access required.**
+
+**Endpoint:** `POST /api/Room/{id}/images`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Type:** `multipart/form-data`
+
+**Form Fields:**
+- `file`: The image file (jpg, jpeg, png, webp)
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image added successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": ["/uploads/rooms/guid.jpg"]
+}
+```
+
+---
+
+### 8. Delete Room Image
+
+Delete an image from a room. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /api/Room/{id}/images?imageUrl={imageUrl}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Query Parameters:**
+- `imageUrl` (string): The relative URL of the image to delete
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Image removed successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": []
+}
+```
+
+---
+
+## Room Type Endpoints
+
+### 1. Get All Room Types
+
+Retrieve a list of all room types.
+
+**Endpoint:** `GET /api/RoomType`
+
+**Authentication:** Not required
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room Types retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [
+    {
+      "id": 1,
+      "name": "Deluxe Suite",
+      "description": "A luxury suite with sea view",
+      "price": 250.00,
+      "capacity": 2,
+      "hotelId": 1
+    }
+  ]
+}
+```
+
+---
+
+### 2. Get Room Type by ID
+
+Retrieve a specific room type by its ID.
+
+**Endpoint:** `GET /api/RoomType/{id}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `id` (integer): Room Type ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room Type retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {
+      "id": 1,
+      "name": "Deluxe Suite",
+      "description": "A luxury suite with sea view",
+      "price": 250.00,
+      "capacity": 2,
+      "hotelId": 1
+  }
+}
+```
+
+---
+
+### 3. Get Room Types by Hotel
+
+Retrieve all room types for a specific hotel.
+
+**Endpoint:** `GET /api/RoomType/hotel/{hotelId}`
+
+**Authentication:** Not required
+
+**URL Parameters:**
+- `hotelId` (integer): Hotel ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room Types retrieved successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": [...]
+}
+```
+
+---
+
+### 4. Add Room Type
+
+Create a new room type. **Admin or Manager access required.**
+
+**Endpoint:** `POST /api/RoomType/add`
+
+**Authentication:** Required (Admin or Manager role)
+
+**Request Body:**
+```json
+{
+  "name": "Deluxe Suite",
+  "description": "A luxury suite with sea view",
+  "price": 250.00,
+  "capacity": 2,
+  "hotelId": 1
+}
+```
+
+**Validation Rules:**
+- `name`: Required
+- `price`: Required, must be greater than 0
+- `capacity`: Required
+- `hotelId`: Required
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room Type created successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": {...}
+}
+```
+
+---
+
+### 5. Update Room Type
+
+Update an existing room type. **Admin or Manager access required.**
+
+**Endpoint:** `PATCH /api/RoomType/edit/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room Type ID
+
+**Request Body:** Same as Add Room Type
+
+---
+
+### 6. Delete Room Type
+
+Delete a room type. **Admin or Manager access required.**
+
+**Endpoint:** `DELETE /api/RoomType/delete/{id}`
+
+**Authentication:** Required (Admin or Manager role)
+
+**URL Parameters:**
+- `id` (integer): Room Type ID
+
+**Success Response (200 OK):**
+```json
+{
+  "message": "Room Type deleted successfully",
+  "isSuccess": true,
+  "errors": null,
+  "data": null
+}
+```
+
+---
   - [1. Get All Reservations](#1-get-all-reservations)
   - [2. Get Reservation by ID](#2-get-reservation-by-id)
   - [3. Get My Reservations](#3-get-my-reservations)
