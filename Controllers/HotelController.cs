@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -22,21 +23,21 @@ public class HotelController : ControllerBase
     public async Task<IActionResult> GetAllHotels()
     {
         var response = await _hotelService.GetAllHotelsAsync();
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("/hotel/search")]
     public async Task<IActionResult> SearchHotels([FromQuery] HotelSearchDTO searchDto)
     {
         var response = await _hotelService.SearchHotelsAsync(searchDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("/hotel/{id:int}")]
     public async Task<IActionResult> GetHotelById(int id)
     {
         var response = await _hotelService.GetHotelByIdAsync(id);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpPost("/hotel/add")]
@@ -45,10 +46,11 @@ public class HotelController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _hotelService.AddHotelAsync(hotelDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("/hotel/edit/{id:int}")]
@@ -57,10 +59,11 @@ public class HotelController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _hotelService.UpdateHotelAsync(id, hotelDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("hotel/delete/{id:int}")]
@@ -68,7 +71,7 @@ public class HotelController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _hotelService.DeleteHotelAsync(id);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPost("/hotel/{id:int}/images")]
@@ -77,17 +80,17 @@ public class HotelController : ControllerBase
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest("No file uploaded");
+            return BadRequest(ApiResponse.FailureResponse("No file uploaded"));
         }
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
-            return BadRequest("Invalid file type. Allowed types: jpg, jpeg, png, webp");
+            return BadRequest(ApiResponse.FailureResponse("Invalid file type. Allowed types: jpg, jpeg, png, webp"));
         }
         var imageUrl = await _fileService.SaveFileAsync(file, "hotels");
         var response = await _hotelService.AddHotelImageAsync(id, imageUrl);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("/hotel/{id:int}/images")]
@@ -96,6 +99,6 @@ public class HotelController : ControllerBase
     {
         _fileService.DeleteFile(imageUrl, "hotels");
         var response = await _hotelService.RemoveHotelImageAsync(id, imageUrl);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }

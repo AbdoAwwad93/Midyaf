@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -20,21 +21,21 @@ public class RoomTypeController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var response = await _roomTypeService.GetAllRoomTypesAsync();
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetById(int id)
     {
         var response = await _roomTypeService.GetRoomTypeByIdAsync(id);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpGet("hotel/{hotelId:int}")]
     public async Task<IActionResult> GetByHotelId(int hotelId)
     {
         var response = await _roomTypeService.GetRoomTypesByHotelIdAsync(hotelId);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpPost("add")]
@@ -43,10 +44,11 @@ public class RoomTypeController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _roomTypeService.AddRoomTypeAsync(roomTypeDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("edit/{id:int}")]
@@ -55,10 +57,11 @@ public class RoomTypeController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _roomTypeService.UpdateRoomTypeAsync(id, roomTypeDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("delete/{id:int}")]
@@ -66,6 +69,6 @@ public class RoomTypeController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _roomTypeService.DeleteRoomTypeAsync(id);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using Midyaf.UnitOfWork;
 
@@ -27,56 +28,44 @@ public class ReservationService : IReservationService
         _userManager = userManager;
     }
 
-    public async Task<GeneralResponse> GetAllReservationsAsync()
+    public async Task<ApiResponse> GetAllReservationsAsync()
     {
-        var response = new GeneralResponse();
         var reservations = await _unitOfWork.Reservations.GetAllAsync();
         if (reservations != null)
         {
-            response.SetResponse("All reservations retrieved successfully", true, Data: reservations);
-            return response;
+            return ApiResponse.SuccessResponse("All reservations retrieved successfully", reservations);
         }
-        response.SetResponse("Error occurred while retrieving reservations", false);
-        return response;
+        return ApiResponse.FailureResponse("Error occurred while retrieving reservations");
     }
 
-    public async Task<GeneralResponse> GetReservationByIdAsync(int id)
+    public async Task<ApiResponse> GetReservationByIdAsync(int id)
     {
-        var response = new GeneralResponse();
         var reservation = await _unitOfWork.Reservations.GetByIdAsync(id);
         if (reservation != null)
         {
-            response.SetResponse("Reservation retrieved successfully", true, Data: reservation);
-            return response;
+            return ApiResponse.SuccessResponse("Reservation retrieved successfully", reservation);
         }
-        response.SetResponse("Reservation not found", false);
-        return response;
+        return ApiResponse.FailureResponse("Reservation not found");
     }
 
-    public async Task<GeneralResponse> GetUserReservationsAsync(string userId)
+    public async Task<ApiResponse> GetUserReservationsAsync(string userId)
     {
-        var response = new GeneralResponse();
         var allReservations = await _unitOfWork.Reservations.GetAllAsync();
         var userReservations = allReservations.Where(r => r.UserId == userId).ToList();
-        response.SetResponse("User reservations retrieved successfully", true, Data: userReservations);
-        return response;
+        return ApiResponse.SuccessResponse("User reservations retrieved successfully", userReservations);
     }
 
-    public async Task<GeneralResponse> CreateReservationAsync(ReservationDTO reservationDto, string userId)
+    public async Task<ApiResponse> CreateReservationAsync(ReservationDTO reservationDto, string userId)
     {
-        var response = new GeneralResponse();
-
         // Validate dates
         if (reservationDto.CheckIn >= reservationDto.CheckOut)
         {
-            response.SetResponse("Check-in date must be before check-out date", false);
-            return response;
+            return ApiResponse.FailureResponse("Check-in date must be before check-out date");
         }
 
         if (reservationDto.CheckIn < DateTime.UtcNow.Date)
         {
-            response.SetResponse("Check-in date cannot be in the past", false);
-            return response;
+            return ApiResponse.FailureResponse("Check-in date cannot be in the past");
         }
 
         // Validate rooms exist
@@ -86,13 +75,11 @@ public class ReservationService : IReservationService
             var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
             if (room == null)
             {
-                response.SetResponse($"Room with ID {roomId} not found", false);
-                return response;
+                return ApiResponse.FailureResponse($"Room with ID {roomId} not found");
             }
             if (!room.IsAvailable)
             {
-                response.SetResponse($"Room {room.RoomNumber} is not available", false);
-                return response;
+                return ApiResponse.FailureResponse($"Room {room.RoomNumber} is not available");
             }
             rooms.Add(room);
         }
@@ -112,25 +99,21 @@ public class ReservationService : IReservationService
             await _emailService.SendBookingConfirmationAsync(user.Email, reservation);
         }
 
-        response.SetResponse("Reservation created successfully", true, reservation);
-        return response;
+        return ApiResponse.SuccessResponse("Reservation created successfully", reservation);
     }
 
-    public async Task<GeneralResponse> UpdateReservationAsync(int id, ReservationDTO reservationDto)
+    public async Task<ApiResponse> UpdateReservationAsync(int id, ReservationDTO reservationDto)
     {
-        var response = new GeneralResponse();
         var reservation = await _unitOfWork.Reservations.GetByIdAsync(id);
         if (reservation == null)
         {
-            response.SetResponse("Reservation not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Reservation not found");
         }
 
         // Validate dates
         if (reservationDto.CheckIn >= reservationDto.CheckOut)
         {
-            response.SetResponse("Check-in date must be before check-out date", false);
-            return response;
+            return ApiResponse.FailureResponse("Check-in date must be before check-out date");
         }
 
         _mapper.Map(reservationDto, reservation);
@@ -138,18 +121,15 @@ public class ReservationService : IReservationService
 
         await _unitOfWork.Reservations.UpdateAsync(reservation);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Reservation updated successfully", true, Data: reservation);
-        return response;
+        return ApiResponse.SuccessResponse("Reservation updated successfully", reservation);
     }
 
-    public async Task<GeneralResponse> UpdateStatusAsync(int id, Status status)
+    public async Task<ApiResponse> UpdateStatusAsync(int id, Status status)
     {
-        var response = new GeneralResponse();
         var reservation = await _unitOfWork.Reservations.GetByIdAsync(id);
         if (reservation == null)
         {
-            response.SetResponse("Reservation not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Reservation not found");
         }
 
         var previousStatus = reservation.Status;
@@ -175,18 +155,15 @@ public class ReservationService : IReservationService
             }
         }
 
-        response.SetResponse($"Reservation status updated to {status}", true, Data: reservation);
-        return response;
+        return ApiResponse.SuccessResponse($"Reservation status updated to {status}", reservation);
     }
 
-    public async Task<GeneralResponse> CancelReservationAsync(int id)
+    public async Task<ApiResponse> CancelReservationAsync(int id)
     {
-        var response = new GeneralResponse();
         var reservation = await _unitOfWork.Reservations.GetByIdAsync(id);
         if (reservation == null)
         {
-            response.SetResponse("Reservation not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Reservation not found");
         }
 
         reservation.Status = Status.Declined;
@@ -204,7 +181,6 @@ public class ReservationService : IReservationService
             }
         }
 
-        response.SetResponse("Reservation cancelled successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Reservation cancelled successfully");
     }
 }

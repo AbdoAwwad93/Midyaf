@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -23,7 +24,7 @@ public class ReservationController : ControllerBase
     public async Task<IActionResult> GetAllReservations()
     {
         var response = await _reservationService.GetAllReservationsAsync();
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("{id:int}")]
@@ -31,7 +32,7 @@ public class ReservationController : ControllerBase
     public async Task<IActionResult> GetReservationById(int id)
     {
         var response = await _reservationService.GetReservationByIdAsync(id);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpGet("my")]
@@ -41,10 +42,10 @@ public class ReservationController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reservationService.GetUserReservationsAsync(userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPost("create")]
@@ -53,15 +54,16 @@ public class ReservationController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reservationService.CreateReservationAsync(reservationDto, userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("edit/{id:int}")]
@@ -70,10 +72,11 @@ public class ReservationController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _reservationService.UpdateReservationAsync(id, reservationDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("status/{id:int}")]
@@ -81,7 +84,7 @@ public class ReservationController : ControllerBase
     public async Task<IActionResult> UpdateStatus(int id, [FromQuery] Status status)
     {
         var response = await _reservationService.UpdateStatusAsync(id, status);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("cancel/{id:int}")]
@@ -89,6 +92,6 @@ public class ReservationController : ControllerBase
     public async Task<IActionResult> Cancel(int id)
     {
         var response = await _reservationService.CancelReservationAsync(id);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }

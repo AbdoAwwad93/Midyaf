@@ -1,6 +1,7 @@
 using AutoMapper;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using Midyaf.UnitOfWork;
 
@@ -17,66 +18,52 @@ public class ReviewService : IReviewService
         _mapper = mapper;
     }
 
-    public async Task<GeneralResponse> GetAllReviewsAsync()
+    public async Task<ApiResponse> GetAllReviewsAsync()
     {
-        var response = new GeneralResponse();
         var reviews = await _unitOfWork.Reviews.GetAllAsync();
         if (reviews != null)
         {
-            response.SetResponse("All reviews retrieved successfully", true, Data: reviews);
-            return response;
+            return ApiResponse.SuccessResponse("All reviews retrieved successfully", reviews);
         }
-        response.SetResponse("Error occurred while retrieving reviews", false);
-        return response;
+        return ApiResponse.FailureResponse("Error occurred while retrieving reviews");
     }
 
-    public async Task<GeneralResponse> GetReviewByIdAsync(int id)
+    public async Task<ApiResponse> GetReviewByIdAsync(int id)
     {
-        var response = new GeneralResponse();
         var review = await _unitOfWork.Reviews.GetByIdAsync(id);
         if (review != null)
         {
-            response.SetResponse("Review retrieved successfully", true, Data: review);
-            return response;
+            return ApiResponse.SuccessResponse("Review retrieved successfully", review);
         }
-        response.SetResponse("Review not found", false);
-        return response;
+        return ApiResponse.FailureResponse("Review not found");
     }
 
-    public async Task<GeneralResponse> GetReviewsByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetReviewsByHotelIdAsync(int hotelId)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         var allReviews = await _unitOfWork.Reviews.GetAllAsync();
         var hotelReviews = allReviews.Where(r => r.HotelId == hotelId).ToList();
-        response.SetResponse($"Reviews for hotel {hotelId} retrieved successfully", true, Data: hotelReviews);
-        return response;
+        return ApiResponse.SuccessResponse($"Reviews for hotel {hotelId} retrieved successfully", hotelReviews);
     }
 
-    public async Task<GeneralResponse> GetUserReviewsAsync(string userId)
+    public async Task<ApiResponse> GetUserReviewsAsync(string userId)
     {
-        var response = new GeneralResponse();
         var allReviews = await _unitOfWork.Reviews.GetAllAsync();
         var userReviews = allReviews.Where(r => r.UserId == userId).ToList();
-        response.SetResponse("User reviews retrieved successfully", true, Data: userReviews);
-        return response;
+        return ApiResponse.SuccessResponse("User reviews retrieved successfully", userReviews);
     }
 
-    public async Task<GeneralResponse> CreateReviewAsync(ReviewDTO reviewDto, string userId)
+    public async Task<ApiResponse> CreateReviewAsync(ReviewDTO reviewDto, string userId)
     {
-        var response = new GeneralResponse();
-
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(reviewDto.HotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         var review = _mapper.Map<Review>(reviewDto);
@@ -85,54 +72,45 @@ public class ReviewService : IReviewService
 
         await _unitOfWork.Reviews.AddAsync(review);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Review created successfully", true, review);
-        return response;
+        return ApiResponse.SuccessResponse("Review created successfully", review);
     }
 
-    public async Task<GeneralResponse> UpdateReviewAsync(int id, ReviewDTO reviewDto, string userId)
+    public async Task<ApiResponse> UpdateReviewAsync(int id, ReviewDTO reviewDto, string userId)
     {
-        var response = new GeneralResponse();
         var review = await _unitOfWork.Reviews.GetByIdAsync(id);
         if (review == null)
         {
-            response.SetResponse("Review not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Review not found");
         }
 
         // Only the owner can update their review
         if (review.UserId != userId)
         {
-            response.SetResponse("You can only update your own reviews", false);
-            return response;
+            return ApiResponse.FailureResponse("You can only update your own reviews");
         }
 
         _mapper.Map(reviewDto, review);
         await _unitOfWork.Reviews.UpdateAsync(review);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Review updated successfully", true, Data: review);
-        return response;
+        return ApiResponse.SuccessResponse("Review updated successfully", review);
     }
 
-    public async Task<GeneralResponse> DeleteReviewAsync(int id, string userId)
+    public async Task<ApiResponse> DeleteReviewAsync(int id, string userId)
     {
-        var response = new GeneralResponse();
         var review = await _unitOfWork.Reviews.GetByIdAsync(id);
         if (review == null)
         {
-            response.SetResponse("Review not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Review not found");
         }
 
         // Only the owner can delete their review
         if (review.UserId != userId)
         {
-            response.SetResponse("You can only delete your own reviews", false);
-            return response;
+            return ApiResponse.FailureResponse("You can only delete your own reviews");
         }
 
         await _unitOfWork.Reviews.RemoveAsync(review);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Review deleted successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Review deleted successfully");
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -25,21 +26,21 @@ public class RoomController : ControllerBase
     public async Task<IActionResult> GetAllRooms()
     {
         var response = await _roomService.GetAllRoomsAsync();
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetRoomById(int id)
     {
         var response = await _roomService.GetRoomByIdAsync(id);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpGet("hotel/{hotelId:int}")]
     public async Task<IActionResult> GetRoomsByHotelId(int hotelId)
     {
         var response = await _roomService.GetRoomsByHotelIdAsync(hotelId);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpPost("add")]
@@ -48,10 +49,11 @@ public class RoomController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _roomService.AddRoomAsync(roomDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("edit/{id:int}")]
@@ -60,10 +62,11 @@ public class RoomController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _roomService.UpdateRoomAsync(id, roomDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("delete/{id:int}")]
@@ -71,7 +74,7 @@ public class RoomController : ControllerBase
     public async Task<IActionResult> Delete(int id)
     {
         var response = await _roomService.DeleteRoomAsync(id);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
     [HttpPost("{id:int}/images")]
     [Authorize(Roles = "Admin,Manager")]
@@ -79,18 +82,18 @@ public class RoomController : ControllerBase
     {
         if (file == null || file.Length == 0)
         {
-            return BadRequest("No file uploaded");
+            return BadRequest(ApiResponse.FailureResponse("No file uploaded"));
         }
         var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
         var extension = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (!allowedExtensions.Contains(extension))
         {
-            return BadRequest("Invalid file type. Allowed types: jpg, jpeg, png, webp");
+            return BadRequest(ApiResponse.FailureResponse("Invalid file type. Allowed types: jpg, jpeg, png, webp"));
         }
 
         var imageUrl = await _fileService.SaveFileAsync(file, "rooms");
         var response = await _roomService.AddRoomImageAsync(id, imageUrl);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("{id:int}/images")]
@@ -99,6 +102,6 @@ public class RoomController : ControllerBase
     {
         _fileService.DeleteFile(imageUrl, "rooms");
         var response = await _roomService.RemoveRoomImageAsync(id, imageUrl);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }

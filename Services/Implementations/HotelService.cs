@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using Midyaf.UnitOfWork;
 
@@ -19,77 +20,61 @@ public class HotelService : IHotelService
         _mapper = mapper;
     }
 
-    public async Task<GeneralResponse> GetAllHotelsAsync()
+    public async Task<ApiResponse> GetAllHotelsAsync()
     {
-        var response = new GeneralResponse();
         var hotels = await _unitOfWork.Hotels.GetAllAsync();
         if (hotels != null)
         {
-            response.SetResponse("All hotels retrieved successfully", true, Data: hotels);
-            return response;
+            return ApiResponse.SuccessResponse("All hotels retrieved successfully", hotels);
         }
-        response.SetResponse("Error occurred while retrieving hotels", false);
-        return response;
+        return ApiResponse.FailureResponse("Error occurred while retrieving hotels");
     }
 
-    public async Task<GeneralResponse> GetHotelByIdAsync(int id)
+    public async Task<ApiResponse> GetHotelByIdAsync(int id)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
         if (hotel != null)
         {
-            response.SetResponse("Hotel retrieved successfully", true, Data: hotel);
-            return response;
+            return ApiResponse.SuccessResponse("Hotel retrieved successfully", hotel);
         }
-        response.SetResponse("Hotel not found", false);
-        return response;
+        return ApiResponse.FailureResponse("Hotel not found");
     }
 
-    public async Task<GeneralResponse> AddHotelAsync(HotelDTO hotelDto)
+    public async Task<ApiResponse> AddHotelAsync(HotelDTO hotelDto)
     {
-        var response = new GeneralResponse();
         var hotel = _mapper.Map<Hotel>(hotelDto);
         await _unitOfWork.Hotels.AddAsync(hotel);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Hotel added successfully", true, hotel);
-        return response;
+        return ApiResponse.SuccessResponse("Hotel added successfully", hotel);
     }
 
-    public async Task<GeneralResponse> UpdateHotelAsync(int id, HotelDTO hotelDto)
+    public async Task<ApiResponse> UpdateHotelAsync(int id, HotelDTO hotelDto)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
         if (hotel == null)
         {
-            response.SetResponse("No hotel existed with this data", false);
-            return response;
+            return ApiResponse.FailureResponse("No hotel existed with this data");
         }
         _mapper.Map(hotelDto, hotel);
         await _unitOfWork.Hotels.UpdateAsync(hotel);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Hotel edited successfully", true, Data: hotel);
-        return response;
+        return ApiResponse.SuccessResponse("Hotel edited successfully", hotel);
     }
 
-    public async Task<GeneralResponse> DeleteHotelAsync(int id)
+    public async Task<ApiResponse> DeleteHotelAsync(int id)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
         if (hotel == null)
         {
-            response.SetResponse("There is no hotel with this data", false);
-            return response;
+            return ApiResponse.FailureResponse("There is no hotel with this data");
         }
         await _unitOfWork.Hotels.RemoveAsync(hotel);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Hotel removed successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Hotel removed successfully");
     }
 
-    public async Task<GeneralResponse> SearchHotelsAsync(HotelSearchDTO searchDto)
+    public async Task<ApiResponse> SearchHotelsAsync(HotelSearchDTO searchDto)
     {
-        var response = new GeneralResponse();
-        
         var query = _unitOfWork.Hotels.GetQueryable();
         if (!string.IsNullOrWhiteSpace(searchDto.Name))
         {
@@ -166,18 +151,15 @@ public class HotelService : IHotelService
             PageSize = searchDto.PageSize
         };
 
-        response.SetResponse($"Found {totalCount} hotels", true, result);
-        return response;
+        return ApiResponse.SuccessResponse($"Found {totalCount} hotels", result);
     }
 
-    public async Task<GeneralResponse> AddHotelImageAsync(int hotelId, string imageUrl)
+    public async Task<ApiResponse> AddHotelImageAsync(int hotelId, string imageUrl)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         if (hotel.Images == null)
@@ -189,31 +171,26 @@ public class HotelService : IHotelService
         await _unitOfWork.Hotels.UpdateAsync(hotel);
         await _unitOfWork.SaveAsync();
 
-        response.SetResponse("Image added successfully", true, Data: hotel.Images);
-        return response;
+        return ApiResponse.SuccessResponse("Image added successfully", hotel.Images);
     }
 
-    public async Task<GeneralResponse> RemoveHotelImageAsync(int hotelId, string imageUrl)
+    public async Task<ApiResponse> RemoveHotelImageAsync(int hotelId, string imageUrl)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         if (hotel.Images == null || !hotel.Images.Contains(imageUrl))
         {
-            response.SetResponse("Image not found in hotel", false);
-            return response;
+            return ApiResponse.FailureResponse("Image not found in hotel");
         }
 
         hotel.Images.Remove(imageUrl);
         await _unitOfWork.Hotels.UpdateAsync(hotel);
         await _unitOfWork.SaveAsync();
 
-        response.SetResponse("Image removed successfully", true, Data: hotel.Images);
-        return response;
+        return ApiResponse.SuccessResponse("Image removed successfully", hotel.Images);
     }
 }

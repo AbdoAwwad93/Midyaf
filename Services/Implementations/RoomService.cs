@@ -1,6 +1,7 @@
 using AutoMapper;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using Midyaf.UnitOfWork;
 
@@ -17,56 +18,45 @@ public class RoomService : IRoomService
         _mapper = mapper;
     }
 
-    public async Task<GeneralResponse> GetAllRoomsAsync()
+    public async Task<ApiResponse> GetAllRoomsAsync()
     {
-        var response = new GeneralResponse();
         var rooms = await _unitOfWork.Rooms.GetAllAsync();
         if (rooms != null)
         {
-            response.SetResponse("All rooms retrieved successfully", true, Data: rooms);
-            return response;
+            return ApiResponse.SuccessResponse("All rooms retrieved successfully", rooms);
         }
-        response.SetResponse("Error occurred while retrieving rooms", false);
-        return response;
+        return ApiResponse.FailureResponse("Error occurred while retrieving rooms");
     }
 
-    public async Task<GeneralResponse> GetRoomByIdAsync(int id)
+    public async Task<ApiResponse> GetRoomByIdAsync(int id)
     {
-        var response = new GeneralResponse();
         var room = await _unitOfWork.Rooms.GetByIdAsync(id);
         if (room != null)
         {
-            response.SetResponse("Room retrieved successfully", true, Data: room);
-            return response;
+            return ApiResponse.SuccessResponse("Room retrieved successfully", room);
         }
-        response.SetResponse("Room not found", false);
-        return response;
+        return ApiResponse.FailureResponse("Room not found");
     }
 
-    public async Task<GeneralResponse> GetRoomsByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetRoomsByHotelIdAsync(int hotelId)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         var allRooms = await _unitOfWork.Rooms.GetAllAsync();
         var hotelRooms = allRooms.Where(r => r.HotelId == hotelId).ToList();
-        response.SetResponse($"Rooms for hotel {hotelId} retrieved successfully", true, Data: hotelRooms);
-        return response;
+        return ApiResponse.SuccessResponse($"Rooms for hotel {hotelId} retrieved successfully", hotelRooms);
     }
 
-    public async Task<GeneralResponse> AddRoomAsync(RoomDTO roomDto)
+    public async Task<ApiResponse> AddRoomAsync(RoomDTO roomDto)
     {
-        var response = new GeneralResponse();
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomDto.HotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         if (roomDto.RoomTypeId.HasValue)
@@ -74,34 +64,29 @@ public class RoomService : IRoomService
             var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(roomDto.RoomTypeId.Value);
             if (roomType == null)
             {
-                response.SetResponse("Room Type not found", false);
-                return response;
+                return ApiResponse.FailureResponse("Room Type not found");
             }
         }
 
         var room = _mapper.Map<Room>(roomDto);
         await _unitOfWork.Rooms.AddAsync(room);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Room added successfully", true, room);
-        return response;
+        return ApiResponse.SuccessResponse("Room added successfully", room);
     }
 
-    public async Task<GeneralResponse> UpdateRoomAsync(int id, RoomDTO roomDto)
+    public async Task<ApiResponse> UpdateRoomAsync(int id, RoomDTO roomDto)
     {
-        var response = new GeneralResponse();
         var room = await _unitOfWork.Rooms.GetByIdAsync(id);
         if (room == null)
         {
-            response.SetResponse("Room not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room not found");
         }
         if (room.HotelId != roomDto.HotelId)
         {
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomDto.HotelId);
             if (hotel == null)
             {
-                response.SetResponse("Hotel not found", false);
-                return response;
+                return ApiResponse.FailureResponse("Hotel not found");
             }
         }
 
@@ -110,41 +95,34 @@ public class RoomService : IRoomService
             var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(roomDto.RoomTypeId.Value);
             if (roomType == null)
             {
-                response.SetResponse("Room Type not found", false);
-                return response;
+                return ApiResponse.FailureResponse("Room Type not found");
             }
         }
 
         _mapper.Map(roomDto, room);
         await _unitOfWork.Rooms.UpdateAsync(room);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Room updated successfully", true, Data: room);
-        return response;
+        return ApiResponse.SuccessResponse("Room updated successfully", room);
     }
 
-    public async Task<GeneralResponse> DeleteRoomAsync(int id)
+    public async Task<ApiResponse> DeleteRoomAsync(int id)
     {
-        var response = new GeneralResponse();
         var room = await _unitOfWork.Rooms.GetByIdAsync(id);
         if (room == null)
         {
-            response.SetResponse("Room not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room not found");
         }
         await _unitOfWork.Rooms.RemoveAsync(room);
         await _unitOfWork.SaveAsync();
-        response.SetResponse("Room deleted successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Room deleted successfully");
     }
 
-    public async Task<GeneralResponse> AddRoomImageAsync(int roomId, string imageUrl)
+    public async Task<ApiResponse> AddRoomImageAsync(int roomId, string imageUrl)
     {
-        var response = new GeneralResponse();
         var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
         if (room == null)
         {
-            response.SetResponse("Room not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room not found");
         }
 
         if (room.ImagesUrls == null)
@@ -156,31 +134,26 @@ public class RoomService : IRoomService
         await _unitOfWork.Rooms.UpdateAsync(room);
         await _unitOfWork.SaveAsync();
 
-        response.SetResponse("Image added successfully", true, Data: room.ImagesUrls);
-        return response;
+        return ApiResponse.SuccessResponse("Image added successfully", room.ImagesUrls);
     }
 
-    public async Task<GeneralResponse> RemoveRoomImageAsync(int roomId, string imageUrl)
+    public async Task<ApiResponse> RemoveRoomImageAsync(int roomId, string imageUrl)
     {
-        var response = new GeneralResponse();
         var room = await _unitOfWork.Rooms.GetByIdAsync(roomId);
         if (room == null)
         {
-            response.SetResponse("Room not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room not found");
         }
 
         if (room.ImagesUrls == null || !room.ImagesUrls.Contains(imageUrl))
         {
-            response.SetResponse("Image not found in room", false);
-            return response;
+            return ApiResponse.FailureResponse("Image not found in room");
         }
 
         room.ImagesUrls.Remove(imageUrl);
         await _unitOfWork.Rooms.UpdateAsync(room);
         await _unitOfWork.SaveAsync();
 
-        response.SetResponse("Image removed successfully", true, Data: room.ImagesUrls);
-        return response;
+        return ApiResponse.SuccessResponse("Image removed successfully", room.ImagesUrls);
     }
 }

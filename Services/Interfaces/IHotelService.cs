@@ -1,16 +1,16 @@
-using Midyaf.Models;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 
 namespace Midyaf.Services.Interfaces;
 
 public interface IHotelService
 {
-    Task<GeneralResponse> GetAllHotelsAsync();
-    Task<GeneralResponse> GetHotelByIdAsync(int id);
-    Task<GeneralResponse> AddHotelAsync(HotelDTO hotelDto);
-    Task<GeneralResponse> UpdateHotelAsync(int id, HotelDTO hotelDto);
-    Task<GeneralResponse> DeleteHotelAsync(int id);
-    Task<GeneralResponse> SearchHotelsAsync(HotelSearchDTO searchDto);
-    Task<GeneralResponse> AddHotelImageAsync(int hotelId, string imageUrl);
-    Task<GeneralResponse> RemoveHotelImageAsync(int hotelId, string imageUrl);
+    Task<ApiResponse> GetAllHotelsAsync();
+    Task<ApiResponse> GetHotelByIdAsync(int id);
+    Task<ApiResponse> AddHotelAsync(HotelDTO hotelDto);
+    Task<ApiResponse> UpdateHotelAsync(int id, HotelDTO hotelDto);
+    Task<ApiResponse> DeleteHotelAsync(int id);
+    Task<ApiResponse> SearchHotelsAsync(HotelSearchDTO searchDto);
+    Task<ApiResponse> AddHotelImageAsync(int hotelId, string imageUrl);
+    Task<ApiResponse> RemoveHotelImageAsync(int hotelId, string imageUrl);
 }

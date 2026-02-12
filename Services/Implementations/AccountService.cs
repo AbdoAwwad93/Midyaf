@@ -9,6 +9,7 @@ using Midyaf.Data;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -36,64 +37,51 @@ public class AccountService : IAccountService
         _context = context;
     }
 
-    public async Task<GeneralResponse> RegisterAsync(RegisterDTO registerDto)
+    public async Task<ApiResponse> RegisterAsync(RegisterDTO registerDto)
     {
-        var response = new GeneralResponse();
-
         var appUser = _mapper.Map<AppUser>(registerDto);
         var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
         if (existingUser != null)
         {
-            response.SetResponse("Email already exists", false);
-            return response;
+            return ApiResponse.FailureResponse("Email already exists");
         }
         var result = await _userManager.CreateAsync(appUser, registerDto.Password);
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            response.SetResponse(errors, false);
-            return response;
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return ApiResponse.FailureResponse("Registration failed", errors);
         }
 
         await _userManager.AddToRoleAsync(appUser, registerDto.Role.ToString());
-        response.SetResponse($"User with role {registerDto.Role} created successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse($"User with role {registerDto.Role} created successfully");
     }
 
-    public async Task<GeneralResponse> LoginAsync(LoginDTO loginDto)
+    public async Task<ApiResponse> LoginAsync(LoginDTO loginDto)
     {
-        var response = new GeneralResponse();
-
         AppUser? appUser = await _userManager.FindByEmailAsync(loginDto.Email);
         if (appUser == null)
         {
-            response.SetResponse("Invalid Email or Password", false);
-            return response;
+            return ApiResponse.FailureResponse("Invalid Email or Password");
         }
 
         var isValid = await _userManager.CheckPasswordAsync(appUser, loginDto.Password);
         if (!isValid)
         {
-            response.SetResponse("Invalid Email or Password", false);
-            return response;
+            return ApiResponse.FailureResponse("Invalid Email or Password");
         }
 
         var loginToken = await GenerateJwtToken(appUser);
-        var userResponse= _mapper.Map<UserResponseDTO>(appUser);
+        var userResponse = _mapper.Map<UserResponseDTO>(appUser);
         userResponse.loginToken = loginToken;
-        response.SetResponse("Authentication successful", true, Data:userResponse);
-        return response;
+        return ApiResponse.SuccessResponse("Authentication successful", userResponse);
     }
 
-    public async Task<GeneralResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDto)
+    public async Task<ApiResponse> ForgotPasswordAsync(ForgotPasswordDTO forgotPasswordDto)
     {
-        var response = new GeneralResponse();
-
         var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
         if (user == null)
         {
-            response.SetResponse("If the email exists, an OTP has been sent", true);
-            return response;
+            return ApiResponse.SuccessResponse("If the email exists, an OTP has been sent");
         }
 
         // Invalidate any existing OTPs for this user
@@ -122,19 +110,15 @@ public class AccountService : IAccountService
         // Send OTP via email
         await _emailService.SendOtpAsync(user.Email!, otp);
 
-        response.SetResponse("If the email exists, an OTP has been sent", true);
-        return response;
+        return ApiResponse.SuccessResponse("If the email exists, an OTP has been sent");
     }
 
-    public async Task<GeneralResponse> ResetPasswordAsync(ResetPasswordDTO resetPasswordDto)
+    public async Task<ApiResponse> ResetPasswordAsync(ResetPasswordDTO resetPasswordDto)
     {
-        var response = new GeneralResponse();
-
         var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
         if (user == null)
         {
-            response.SetResponse("Invalid reset request", false);
-            return response;
+            return ApiResponse.FailureResponse("Invalid reset request");
         }
 
         // Find valid OTP
@@ -147,8 +131,7 @@ public class AccountService : IAccountService
 
         if (otpRecord == null)
         {
-            response.SetResponse("Invalid or expired OTP", false);
-            return response;
+            return ApiResponse.FailureResponse("Invalid or expired OTP");
         }
 
         // Mark OTP as used
@@ -161,13 +144,11 @@ public class AccountService : IAccountService
 
         if (!result.Succeeded)
         {
-            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-            response.SetResponse(errors, false);
-            return response;
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return ApiResponse.FailureResponse("Password reset failed", errors);
         }
 
-        response.SetResponse("Password has been reset successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Password has been reset successfully");
     }
     public async Task<string> GenerateJwtToken(AppUser user)
     {

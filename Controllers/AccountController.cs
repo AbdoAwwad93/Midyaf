@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.RateLimiting;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -23,10 +24,11 @@ public class AccountController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _accountService.RegisterAsync(registerDto);
-        return response.IsSuccess ? Created("", response) : BadRequest(response);
+        return response.Success ? Created("", response) : BadRequest(response);
     }
     [HttpPost("signup/admin")]
     [Authorize(Roles="Admin")]
@@ -34,10 +36,11 @@ public class AccountController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _accountService.RegisterAsync(registerDto);
-        return response.IsSuccess ? Created("", response) : BadRequest(response);
+        return response.Success ? Created("", response) : BadRequest(response);
     }
 
     [HttpPost("Login")]
@@ -45,10 +48,11 @@ public class AccountController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _accountService.LoginAsync(loginDto);
-        return response.IsSuccess ? Ok(response) : Unauthorized(response);
+        return response.Success ? Ok(response) : Unauthorized(response);
     }
 
     [HttpPost("forgot-password")]
@@ -57,7 +61,8 @@ public class AccountController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _accountService.ForgotPasswordAsync(forgotPasswordDto);
         return Ok(response);
@@ -69,10 +74,10 @@ public class AccountController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var response = await _accountService.ResetPasswordAsync(resetPasswordDto);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }
-

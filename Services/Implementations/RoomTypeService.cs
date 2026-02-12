@@ -1,6 +1,7 @@
 using AutoMapper;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 using Midyaf.UnitOfWork;
 
@@ -19,52 +20,41 @@ public class RoomTypeService : IRoomTypeService
         _logger = logger;
     }
 
-    public async Task<GeneralResponse> GetAllRoomTypesAsync()
+    public async Task<ApiResponse> GetAllRoomTypesAsync()
     {
-        var response = new GeneralResponse();
         var roomTypes = await _unitOfWork.RoomTypes.GetAllAsync();
         var roomTypeDtos = _mapper.Map<IEnumerable<RoomTypeDTO>>(roomTypes);
-        response.SetResponse("Room Types retrieved successfully", true, roomTypeDtos);
-        return response;
+        return ApiResponse.SuccessResponse("Room Types retrieved successfully", roomTypeDtos);
     }
 
-    public async Task<GeneralResponse> GetRoomTypesByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetRoomTypesByHotelIdAsync(int hotelId)
     {
-        var response = new GeneralResponse();
         var roomTypes = await _unitOfWork.RoomTypes.FindAsync(rt => rt.HotelId == hotelId);
         if (!roomTypes.Any())
         {
-            response.SetResponse($"No room types found for hotel {hotelId}", true, new List<RoomTypeDTO>());
-            return response;
+            return ApiResponse.SuccessResponse($"No room types found for hotel {hotelId}", new List<RoomTypeDTO>());
         }
         var roomTypeDtos = _mapper.Map<IEnumerable<RoomTypeDTO>>(roomTypes);
-        response.SetResponse("Room Types retrieved successfully", true, roomTypeDtos);
-        return response;
+        return ApiResponse.SuccessResponse("Room Types retrieved successfully", roomTypeDtos);
     }
 
-    public async Task<GeneralResponse> GetRoomTypeByIdAsync(int id)
+    public async Task<ApiResponse> GetRoomTypeByIdAsync(int id)
     {
-        var response = new GeneralResponse();
         var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(id);
         if (roomType == null)
         {
-            response.SetResponse("Room Type not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room Type not found");
         }
         var roomTypeDto = _mapper.Map<RoomTypeDTO>(roomType);
-        response.SetResponse("Room Type retrieved successfully", true, roomTypeDto);
-        return response;
+        return ApiResponse.SuccessResponse("Room Type retrieved successfully", roomTypeDto);
     }
 
-    public async Task<GeneralResponse> AddRoomTypeAsync(RoomTypeDTO roomTypeDto)
+    public async Task<ApiResponse> AddRoomTypeAsync(RoomTypeDTO roomTypeDto)
     {
-        var response = new GeneralResponse();
-        
         var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomTypeDto.HotelId);
         if (hotel == null)
         {
-            response.SetResponse("Hotel not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Hotel not found");
         }
 
         var roomType = _mapper.Map<RoomType>(roomTypeDto);
@@ -72,26 +62,22 @@ public class RoomTypeService : IRoomTypeService
         await _unitOfWork.SaveAsync();
 
         var createdDto = _mapper.Map<RoomTypeDTO>(roomType);
-        response.SetResponse("Room Type created successfully", true, createdDto);
-        return response;
+        return ApiResponse.SuccessResponse("Room Type created successfully", createdDto);
     }
 
-    public async Task<GeneralResponse> UpdateRoomTypeAsync(int id, RoomTypeDTO roomTypeDto)
+    public async Task<ApiResponse> UpdateRoomTypeAsync(int id, RoomTypeDTO roomTypeDto)
     {
-        var response = new GeneralResponse();
         var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(id);
         if (roomType == null)
         {
-            response.SetResponse("Room Type not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room Type not found");
         }
         if (roomType.HotelId != roomTypeDto.HotelId)
         {
              var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomTypeDto.HotelId);
              if (hotel == null)
              {
-                 response.SetResponse("Target Hotel not found", false);
-                 return response;
+                 return ApiResponse.FailureResponse("Target Hotel not found");
              }
         }
 
@@ -105,30 +91,25 @@ public class RoomTypeService : IRoomTypeService
         await _unitOfWork.SaveAsync();
 
         var updatedDto = _mapper.Map<RoomTypeDTO>(roomType);
-        response.SetResponse("Room Type updated successfully", true, updatedDto);
-        return response;
+        return ApiResponse.SuccessResponse("Room Type updated successfully", updatedDto);
     }
 
-    public async Task<GeneralResponse> DeleteRoomTypeAsync(int id)
+    public async Task<ApiResponse> DeleteRoomTypeAsync(int id)
     {
-        var response = new GeneralResponse();
         var roomType = await _unitOfWork.RoomTypes.GetByIdAsync(id);
         if (roomType == null)
         {
-            response.SetResponse("Room Type not found", false);
-            return response;
+            return ApiResponse.FailureResponse("Room Type not found");
         }
 
         if (roomType.Rooms != null && roomType.Rooms.Any())
         {
-             response.SetResponse("Cannot delete Room Type because it has rooms assigned", false);
-             return response;
+             return ApiResponse.FailureResponse("Cannot delete Room Type because it has rooms assigned");
         }
 
         await _unitOfWork.RoomTypes.RemoveAsync(roomType);
         await _unitOfWork.SaveAsync();
 
-        response.SetResponse("Room Type deleted successfully", true);
-        return response;
+        return ApiResponse.SuccessResponse("Room Type deleted successfully");
     }
 }

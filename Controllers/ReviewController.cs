@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Midyaf.Models.DTOs;
+using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
 
 namespace Midyaf.Controllers;
@@ -21,21 +22,21 @@ public class ReviewController : ControllerBase
     public async Task<IActionResult> GetAllReviews()
     {
         var response = await _reviewService.GetAllReviewsAsync();
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetReviewById(int id)
     {
         var response = await _reviewService.GetReviewByIdAsync(id);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpGet("hotel/{hotelId:int}")]
     public async Task<IActionResult> GetReviewsByHotelId(int hotelId)
     {
         var response = await _reviewService.GetReviewsByHotelIdAsync(hotelId);
-        return response.IsSuccess ? Ok(response) : NotFound(response);
+        return response.Success ? Ok(response) : NotFound(response);
     }
 
     [HttpGet("my")]
@@ -45,10 +46,10 @@ public class ReviewController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reviewService.GetUserReviewsAsync(userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPost("add")]
@@ -57,15 +58,16 @@ public class ReviewController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reviewService.CreateReviewAsync(reviewDto, userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpPatch("edit/{id:int}")]
@@ -74,15 +76,16 @@ public class ReviewController : ControllerBase
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest(ModelState);
+            var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
+            return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reviewService.UpdateReviewAsync(id, reviewDto, userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 
     [HttpDelete("delete/{id:int}")]
@@ -92,9 +95,9 @@ public class ReviewController : ControllerBase
         var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (userId == null)
         {
-            return Unauthorized();
+            return Unauthorized(ApiResponse.FailureResponse("User not authenticated"));
         }
         var response = await _reviewService.DeleteReviewAsync(id, userId);
-        return response.IsSuccess ? Ok(response) : BadRequest(response);
+        return response.Success ? Ok(response) : BadRequest(response);
     }
 }
