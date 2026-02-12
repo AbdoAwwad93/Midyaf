@@ -27,6 +27,10 @@ public class AccountController : ControllerBase
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
+        if(registerDto.Role != UserRole.Admin)
+        {
+            return BadRequest(ApiResponse.FailureResponse("Validation failed",new List<string> {"Invalid Role it must be User Or Manager"}));
+        }
         var response = await _accountService.RegisterAsync(registerDto);
         return response.Success ? Created("", response) : BadRequest(response);
     }
@@ -38,6 +42,10 @@ public class AccountController : ControllerBase
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
+        }
+        if(registerDto.Role != UserRole.Admin)
+        {
+            return BadRequest(ApiResponse.FailureResponse("Validation failed",new List<string> {"Invalid Role it must be Admin"}));
         }
         var response = await _accountService.RegisterAsync(registerDto);
         return response.Success ? Created("", response) : BadRequest(response);

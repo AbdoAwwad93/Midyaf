@@ -26,9 +26,9 @@
   - [Account Endpoints](#account-endpoints)
     - [1. User Registration](#1-user-registration)
     - [2. Admin Registration](#2-admin-registration)
-    - [4. User Login](#4-user-login)
-    - [5. Forgot Password](#5-forgot-password)
-    - [6. Reset Password](#6-reset-password)
+    - [3. User Login](#3-user-login)
+    - [4. Forgot Password](#4-forgot-password)
+    - [5. Reset Password](#5-reset-password)
   - [Hotel Endpoints](#hotel-endpoints)
     - [1. Get All Hotels](#1-get-all-hotels)
     - [2. Add Hotel](#2-add-hotel)
@@ -83,9 +83,8 @@ Retrieve a list of all rooms.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "All rooms retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "All rooms retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -98,7 +97,8 @@ Retrieve a list of all rooms.
       "roomTypeId": 5,
       "roomType": { "id": 5, "name": "Deluxe Suite" }
     }
-  ]
+  ],
+  "errors": []
 }
 ```
 
@@ -118,9 +118,8 @@ Retrieve a specific room by its ID.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Room retrieved successfully",
   "data": {
     "id": 1,
     "roomNumber": "101",
@@ -130,7 +129,8 @@ Retrieve a specific room by its ID.
     "imagesUrls": [],
     "hotelId": 1,
     "roomTypeId": 5
-  }
+  },
+  "errors": []
 }
 ```
 
@@ -150,9 +150,8 @@ Retrieve all rooms for a specific hotel.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Rooms for hotel 1 retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Rooms for hotel 1 retrieved successfully",
   "data": [...]
 }
 ```
@@ -192,9 +191,8 @@ Create a new room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room added successfully",
   "success": true,
-  "errors": [],
+  "message": "Room added successfully",
   "data": {...}
 }
 ```
@@ -230,9 +228,8 @@ Delete a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room deleted successfully",
   "success": true,
-  "errors": [],
+  "message": "Room deleted successfully",
   "data": null
 }
 ```
@@ -255,9 +252,8 @@ Upload an image for a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image added successfully",
   "success": true,
-  "errors": [],
+  "message": "Image added successfully",
   "data": ["/uploads/rooms/guid.jpg"]
 }
 ```
@@ -278,9 +274,8 @@ Delete an image from a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image removed successfully",
   "success": true,
-  "errors": [],
+  "message": "Image removed successfully",
   "data": []
 }
 ```
@@ -300,9 +295,8 @@ Retrieve a list of all room types.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room Types retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Room Types retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -312,7 +306,8 @@ Retrieve a list of all room types.
       "capacity": 2,
       "hotelId": 1
     }
-  ]
+  ],
+  "errors": []
 }
 ```
 
@@ -332,9 +327,8 @@ Retrieve a specific room type by its ID.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room Type retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Room Type retrieved successfully",
   "data": {
       "id": 1,
       "name": "Deluxe Suite",
@@ -342,7 +336,8 @@ Retrieve a specific room type by its ID.
       "price": 250.00,
       "capacity": 2,
       "hotelId": 1
-  }
+  },
+  "errors": []
 }
 ```
 
@@ -362,9 +357,8 @@ Retrieve all room types for a specific hotel.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room Types retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Room Types retrieved successfully",
   "data": [...]
 }
 ```
@@ -399,9 +393,8 @@ Create a new room type. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room Type created successfully",
   "success": true,
-  "errors": [],
+  "message": "Room Type created successfully",
   "data": {...}
 }
 ```
@@ -437,26 +430,11 @@ Delete a room type. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room Type deleted successfully",
   "success": true,
-  "errors": [],
+  "message": "Room Type deleted successfully",
   "data": null
 }
 ```
-
----
-  - [1. Get All Reservations](#1-get-all-reservations)
-  - [2. Get Reservation by ID](#2-get-reservation-by-id)
-  - [3. Get My Reservations](#3-get-my-reservations)
-  - [4. Create Reservation](#4-create-reservation)
-  - [5. Update Reservation](#5-update-reservation)
-  - [6. Update Reservation Status](#6-update-reservation-status)
-  - [7. Cancel Reservation](#7-cancel-reservation)
-- [Review Endpoints](#review-endpoints)
-  - [1. Get All Reviews](#1-get-all-reviews)
-  - [2. Get Review by ID](#2-get-review-by-id)
-  - [3. Get Reviews by Hotel](#3-get-reviews-by-hotel)
-  - [4. Get My Reviews](#4-get-my-reviews)
 
 ---
 
@@ -485,8 +463,7 @@ All API endpoints return responses in the following format:
 {
   "success": true,
   "message": "Success message",
-  "data": {},
-  "errors": []
+  "data": {}
 }
 ```
 
@@ -551,22 +528,57 @@ Register a new user account.
 **Success Response (201 Created):**
 ```json
 {
-  "message": "User with role User created successfully",
   "success": true,
-  "errors": [],
+  "message": "User with role User created successfully",
   "data": null
 }
 ```
 
-**Error Response (400 Bad Request):**
+**Error Response (400 Bad Request) — Email already exists:**
 ```json
 {
   "success": false,
   "message": "Email already exists",
-  "data": null,
-  "errors": []
+  "data": null
 }
 ```
+
+**Error Response (400 Bad Request) — Invalid role:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": ["Invalid Role it must be User Or Manager"]
+}
+```
+
+**Error Response (400 Bad Request) — Validation failed:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": [
+    "The Email field is required.",
+    "The Password must be at least 6 characters."
+  ]
+}
+```
+
+**Error Response (400 Bad Request) — Registration failed:**
+```json
+{
+  "success": false,
+  "message": "User creation failed",
+  "data": null,
+  "errors": [
+    "Passwords must have at least one non alphanumeric character.",
+    "Passwords must have at least one uppercase ('A'-'Z')."
+  ]
+}
+```
+
 ---
 
 ### 2. Admin Registration
@@ -611,20 +623,37 @@ Authorization: Bearer <admin-jwt-token>
 - `password`: Required, minimum 6 characters
 - `confirmPassword`: Required, must match `password`
 
-
 **Success Response (201 Created):**
 ```json
 {
-  "message": "User with role Admin created successfully",
   "success": true,
-  "errors": [],
+  "message": "User with role Admin created successfully",
+  "data": null
+}
+```
+
+**Error Response (400 Bad Request) — Invalid role:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": ["Invalid Role it must be Admin"]
+}
+```
+
+**Error Response (400 Bad Request) — Email already exists:**
+```json
+{
+  "success": false,
+  "message": "Email already exists",
   "data": null
 }
 ```
 
 ---
 
-### 4. User Login
+### 3. User Login
 
 Authenticate a user and receive a JWT token.
 
@@ -649,9 +678,8 @@ Authenticate a user and receive a JWT token.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Authentication successful",
   "success": true,
-  "errors": [],
+  "message": "Authentication successful",
   "data": {
     "firstName": "Abdulrahman",
     "lastName": "Awwad",
@@ -663,25 +691,35 @@ Authenticate a user and receive a JWT token.
     "address": "Dairout",
     "role": "User",
     "loginToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-  }
+  },
+  "errors": []
 }
 ```
 
 **Note:** The `loginToken` field contains the JWT token as a string. Store this token securely for authenticated requests.
+
+**Error Response (400 Bad Request) — Validation failed:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": ["The Email field is required."]
+}
+```
 
 **Error Response (401 Unauthorized):**
 ```json
 {
   "success": false,
   "message": "Invalid Email or Password",
-  "data": null,
-  "errors": []
+  "data": null
 }
 ```
 
 ---
 
-### 5. Forgot Password
+### 4. Forgot Password
 
 Initiate password reset process by sending an OTP to the user's email.
 
@@ -699,16 +737,25 @@ Initiate password reset process by sending an OTP to the user's email.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "If the email exists, an OTP has been sent",
   "success": true,
-  "errors": [],
+  "message": "If the email exists, an OTP has been sent",
   "data": null
+}
+```
+
+**Error Response (400 Bad Request) — Validation failed:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": ["The Email field is required."]
 }
 ```
 
 ---
 
-### 6. Reset Password
+### 5. Reset Password
 
 Reset password using the OTP received via email.
 
@@ -729,10 +776,50 @@ Reset password using the OTP received via email.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Password has been reset successfully",
   "success": true,
-  "errors": [],
+  "message": "Password has been reset successfully",
   "data": null
+}
+```
+
+**Error Response (400 Bad Request) — Invalid reset request:**
+```json
+{
+  "success": false,
+  "message": "Invalid reset request",
+  "data": null
+}
+```
+
+**Error Response (400 Bad Request) — Invalid or expired OTP:**
+```json
+{
+  "success": false,
+  "message": "Invalid or expired OTP",
+  "data": null
+}
+```
+
+**Error Response (400 Bad Request) — Password reset failed:**
+```json
+{
+  "success": false,
+  "message": "Password reset failed",
+  "data": null,
+  "errors": [
+    "Passwords must have at least one non alphanumeric character.",
+    "Passwords must have at least one uppercase ('A'-'Z')."
+  ]
+}
+```
+
+**Error Response (400 Bad Request) — Validation failed:**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "data": null,
+  "errors": ["The Email field is required."]
 }
 ```
 
@@ -751,9 +838,8 @@ Retrieve a list of all hotels.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "All hotels retrived successfully",
   "success": true,
-  "errors": [],
+  "message": "All hotels retrived successfully",
   "data": [
     {
       "id": 1,
@@ -765,16 +851,16 @@ Retrieve a list of all hotels.
       "reviews": [],
       "rooms": []
     }
-  ]
+  ],
+  "errors": []
 }
 ```
 
 **Error Response (400 Bad Request):**
 ```json
 {
-  "message": "Error occured while retriving hotels",
   "success": false,
-  "errors": [],
+  "message": "Error occured while retriving hotels",
   "data": null
 }
 ```
@@ -814,9 +900,8 @@ Content-Type: application/json
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Hotel added successfully",
   "success": true,
-  "errors": [],
+  "message": "Hotel added successfully",
   "data": {
     "id": 1,
     "name": "Grand Hotel",
@@ -826,16 +911,16 @@ Content-Type: application/json
     "managerId": null,
     "reviews": [],
     "rooms": []
-  }
+  },
+  "errors": []
 }
 ```
 
 **Error Response (400 Bad Request):**
 ```json
 {
-  "message": "Invalid Data",
   "success": false,
-  "errors": [],
+  "message": "Invalid Data",
   "data": null
 }
 ```
@@ -875,9 +960,8 @@ Same as Add Hotel endpoint
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Hotel edited successfully",
   "success": true,
-  "errors": [],
+  "message": "Hotel edited successfully",
   "data": {
     "id": 1,
     "name": "Updated Hotel Name",
@@ -887,16 +971,16 @@ Same as Add Hotel endpoint
     "managerId": null,
     "reviews": [],
     "rooms": []
-  }
+  },
+  "errors": []
 }
 ```
 
 **Error Response (400 Bad Request):**
 ```json
 {
-  "message": "No hotel existed with this data",
   "success": false,
-  "errors": [],
+  "message": "No hotel existed with this data",
   "data": null
 }
 ```
@@ -924,9 +1008,8 @@ Authorization: Bearer <jwt-token>
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Hotel removed successfully",
   "success": true,
-  "errors": [],
+  "message": "Hotel removed successfully",
   "data": null
 }
 ```
@@ -934,9 +1017,8 @@ Authorization: Bearer <jwt-token>
 **Error Response (400 Bad Request):**
 ```json
 {
-  "message": "there is no hotel with this data",
   "success": false,
-  "errors": [],
+  "message": "there is no hotel with this data",
   "data": null
 }
 ```
@@ -971,15 +1053,15 @@ Search and filter hotels.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Found 5 hotels",
   "success": true,
-  "errors": [],
+  "message": "Found 5 hotels",
   "data": {
     "items": [...],
     "totalCount": 5,
     "page": 1,
     "pageSize": 10
-  }
+  },
+  "errors": []
 }
 ```
 
@@ -1001,9 +1083,8 @@ Upload an image for a hotel. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image added successfully",
   "success": true,
-  "errors": [],
+  "message": "Image added successfully",
   "data": ["/uploads/hotels/guid.jpg"]
 }
 ```
@@ -1024,9 +1105,8 @@ Delete an image from a hotel. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image removed successfully",
   "success": true,
-  "errors": [],
+  "message": "Image removed successfully",
   "data": []
 }
 ```
@@ -1046,9 +1126,8 @@ Retrieve a list of all rooms.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "All rooms retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "All rooms retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -1059,7 +1138,8 @@ Retrieve a list of all rooms.
       "imagesUrls": ["https://example.com/room1.jpg"],
       "hotelId": 1
     }
-  ]
+  ],
+  "errors": []
 }
 ```
 
@@ -1079,9 +1159,8 @@ Retrieve a specific room by its ID.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Room retrieved successfully",
   "data": {
     "id": 1,
     "roomNumber": "101",
@@ -1090,7 +1169,8 @@ Retrieve a specific room by its ID.
     "isAvailable": true,
     "imagesUrls": [],
     "hotelId": 1
-  }
+  },
+  "errors": []
 }
 ```
 
@@ -1110,9 +1190,8 @@ Retrieve all rooms for a specific hotel.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Rooms for hotel 1 retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "Rooms for hotel 1 retrieved successfully",
   "data": [...]
 }
 ```
@@ -1150,9 +1229,8 @@ Create a new room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room added successfully",
   "success": true,
-  "errors": [],
+  "message": "Room added successfully",
   "data": {...}
 }
 ```
@@ -1188,9 +1266,8 @@ Delete a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Room deleted successfully",
   "success": true,
-  "errors": [],
+  "message": "Room deleted successfully",
   "data": null
 }
 ```
@@ -1215,9 +1292,8 @@ Upload an image for a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image added successfully",
   "success": true,
-  "errors": [],
+  "message": "Image added successfully",
   "data": ["/uploads/rooms/guid.jpg"]
 }
 ```
@@ -1238,9 +1314,8 @@ Delete an image from a room. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Image removed successfully",
   "success": true,
-  "errors": [],
+  "message": "Image removed successfully",
   "data": []
 }
 ```
@@ -1260,9 +1335,8 @@ Retrieve all reservations. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "All reservations retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "All reservations retrieved successfully",
   "data": [
     {
       "id": 1,
@@ -1273,7 +1347,8 @@ Retrieve all reservations. **Admin or Manager access required.**
       "userId": "user-id",
       "rooms": [...]
     }
-  ]
+  ],
+  "errors": []
 }
 ```
 
@@ -1310,9 +1385,8 @@ Retrieve current user's reservations.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "User reservations retrieved successfully",
   "success": true,
-  "errors": [],
+  "message": "User reservations retrieved successfully",
   "data": [...]
 }
 ```
@@ -1346,9 +1420,8 @@ Create a new reservation.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Reservation created successfully",
   "success": true,
-  "errors": [],
+  "message": "Reservation created successfully",
   "data": {...}
 }
 ```
@@ -1402,9 +1475,8 @@ Change reservation status. **Admin or Manager access required.**
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Reservation status updated to Confirmed",
   "success": true,
-  "errors": [],
+  "message": "Reservation status updated to Confirmed",
   "data": {...}
 }
 ```
@@ -1425,9 +1497,8 @@ Cancel a reservation (sets status to Declined).
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Reservation cancelled successfully",
   "success": true,
-  "errors": [],
+  "message": "Reservation cancelled successfully",
   "data": null
 }
 ```
@@ -1551,8 +1622,7 @@ If an authenticated endpoint is accessed without a valid token or with an expire
 {
   "success": false,
   "message": "User not authenticated",
-  "data": null,
-  "errors": []
+  "data": null
 }
 ```
 
