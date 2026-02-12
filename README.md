@@ -521,7 +521,8 @@ Register a new user account.
   "city": "New York",
   "address": "123 Main Street",
   "password": "password123",
-  "confirmPassword": "password123"
+  "confirmPassword": "password123",
+  "Role": "User" //User OR Manager
 }
 ```
 
@@ -543,10 +544,7 @@ Register a new user account.
   "message": "User with role User created successfully",
   "isSuccess": true,
   "errors": null,
-  "data": {
-    "email": "john.doe@example.com",
-    "role": "User"
-  }
+  "data": null
 }
 ```
 
@@ -559,41 +557,9 @@ Register a new user account.
   "data": null
 }
 ```
-
 ---
 
-### 2. Manager Registration
-
-Register a new manager account. **Admin access required.**
-
-**Endpoint:** `POST /Account/signup/manager`
-
-**Authentication:** Required (Admin role)
-
-**Headers:**
-```
-Authorization: Bearer <admin-jwt-token>
-```
-
-**Request Body:**
-Same as User Registration (see above)
-
-**Success Response (201 Created):**
-```json
-{
-  "message": "User with role Manager created successfully",
-  "isSuccess": true,
-  "errors": null,
-  "data": {
-    "email": "manager@example.com",
-    "role": "Manager"
-  }
-}
-```
-
----
-
-### 3. Admin Registration
+### 2. Admin Registration
 
 Register a new admin account. **Admin access required.**
 
@@ -607,7 +573,34 @@ Authorization: Bearer <admin-jwt-token>
 ```
 
 **Request Body:**
-Same as User Registration (see above)
+```json
+{
+  "firstName": "John",
+  "lastName": "Doe",
+  "userName": "johndoe",
+  "email": "john.doe@example.com",
+  "phoneNumber": "+1234567890",
+  "country": "United States",
+  "city": "New York",
+  "address": "123 Main Street",
+  "password": "password123",
+  "confirmPassword": "password123",
+  "Role": "Admin"
+}
+```
+
+**Validation Rules:**
+- `firstName`: Required, letters only (a-z, A-Z)
+- `lastName`: Required, letters only (a-z, A-Z)
+- `userName`: Required
+- `email`: Required, valid email address
+- `phoneNumber`: Required, valid phone number format
+- `country`: Required, letters only (a-z, A-Z)
+- `city`: Required, letters only (a-z, A-Z)
+- `address`: Required, letters only (a-z, A-Z)
+- `password`: Required, minimum 6 characters
+- `confirmPassword`: Required, must match `password`
+
 
 **Success Response (201 Created):**
 ```json
@@ -615,10 +608,7 @@ Same as User Registration (see above)
   "message": "User with role Admin created successfully",
   "isSuccess": true,
   "errors": null,
-  "data": {
-    "email": "admin@example.com",
-    "role": "Admin"
-  }
+  "data": null
 }
 ```
 
@@ -649,14 +639,25 @@ Authenticate a user and receive a JWT token.
 **Success Response (200 OK):**
 ```json
 {
-  "message": "Authentication successfu",
+  "message": "Authentication successful",
   "isSuccess": true,
   "errors": null,
-  "data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "data": {
+    "firstName": "Abdulrahman",
+    "lastName": "Awwad",
+    "userName": "Awwad211",
+    "email": "Awwad@example.com",
+    "phoneNumber": "01555248446",
+    "country": "Egypt",
+    "city": "Assiut",
+    "address": "Dairout",
+    "role": "User",
+    "loginToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  }
 }
 ```
 
-**Note:** The `data` field contains the JWT token as a string. Store this token securely for authenticated requests.
+**Note:** The `loginToken` field contains the JWT token as a string. Store this token securely for authenticated requests.
 
 **Error Response (401 Unauthorized):**
 ```json

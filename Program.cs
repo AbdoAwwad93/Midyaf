@@ -16,6 +16,7 @@ using System.Threading.RateLimiting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.RateLimiting;
+using System.Text.Json.Serialization;
 
 namespace Midyaf;
 
@@ -58,6 +59,10 @@ public class Program
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(option =>
         {
             option.SuppressModelStateInvalidFilter = false;
+        })
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
