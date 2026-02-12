@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Midyaf.Models.Enums;
 
 namespace Midyaf.Models.DTOs;
 
@@ -34,4 +35,6 @@ public class RegisterDTO
     [DataType(DataType.Password)]
     [Compare("Password")]
     public string ConfirmPassword { get; set; }
+    [Required]
+    public UserRole Role {get; set;}
 }

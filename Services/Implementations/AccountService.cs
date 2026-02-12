@@ -36,7 +36,7 @@ public class AccountService : IAccountService
         _context = context;
     }
 
-    public async Task<GeneralResponse> RegisterAsync(RegisterDTO registerDto, UserRole role)
+    public async Task<GeneralResponse> RegisterAsync(RegisterDTO registerDto)
     {
         var response = new GeneralResponse();
 
@@ -47,8 +47,6 @@ public class AccountService : IAccountService
             response.SetResponse("Email already exists", false);
             return response;
         }
-
-        appUser.Role = role;
         var result = await _userManager.CreateAsync(appUser, registerDto.Password);
         if (!result.Succeeded)
         {
@@ -57,8 +55,8 @@ public class AccountService : IAccountService
             return response;
         }
 
-        await _userManager.AddToRoleAsync(appUser, role.ToString());
-        response.SetResponse($"User with role {role} created successfully", true, new { appUser.Email, appUser.Role });
+        await _userManager.AddToRoleAsync(appUser, registerDto.Role.ToString());
+        response.SetResponse($"User with role {registerDto.Role} created successfully", true);
         return response;
     }
 
@@ -80,30 +78,10 @@ public class AccountService : IAccountService
             return response;
         }
 
-        var roles = await _userManager.GetRolesAsync(appUser);
-        var claims = new List<Claim>
-        {
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, appUser.Id)
-        };
-        foreach (var role in roles)
-        {
-            claims.Add(new Claim(ClaimTypes.Role, role));
-        }
-
-        var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey!));
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        var token = new JwtSecurityToken(
-            issuer: Environment.GetEnvironmentVariable("Issuer"),
-            audience: Environment.GetEnvironmentVariable("Audience"),
-            claims: claims,
-            expires: DateTime.Now.AddMinutes(30),
-            signingCredentials: creds
-        );
-
-        var loginToken = new JwtSecurityTokenHandler().WriteToken(token);
-        response.SetResponse("Authentication successful", true, Data: loginToken);
+        var loginToken = await GenerateJwtToken(appUser);
+        var userResponse= _mapper.Map<UserResponseDTO>(appUser);
+        userResponse.loginToken = loginToken;
+        response.SetResponse("Authentication successful", true, Data:userResponse);
         return response;
     }
 
@@ -190,5 +168,32 @@ public class AccountService : IAccountService
 
         response.SetResponse("Password has been reset successfully", true);
         return response;
+    }
+    public async Task<string> GenerateJwtToken(AppUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+        var claims = new List<Claim>
+        {
+            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.NameIdentifier, user.Id)
+        };
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
+
+        var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(securityKey!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: Environment.GetEnvironmentVariable("Issuer"),
+            audience: Environment.GetEnvironmentVariable("Audience"),
+            claims: claims,
+            expires: DateTime.Now.AddMinutes(30),
+            signingCredentials: creds
+        );
+
+        var loginToken = new JwtSecurityTokenHandler().WriteToken(token);
+        return loginToken;
     }
 }

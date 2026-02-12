@@ -19,36 +19,24 @@ public class AccountController : ControllerBase
     }
 
     [HttpPost("signup")]
-    public async Task<IActionResult> SignUpUser(RegisterDTO registerDto)
+    public async Task<IActionResult> SignUp(RegisterDTO registerDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        var response = await _accountService.RegisterAsync(registerDto, UserRole.User);
+        var response = await _accountService.RegisterAsync(registerDto);
         return response.IsSuccess ? Created("", response) : BadRequest(response);
     }
-
-    [HttpPost("signup/manager")]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> SignUpManager(RegisterDTO registerDto)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        var response = await _accountService.RegisterAsync(registerDto, UserRole.Manager);
-        return response.IsSuccess ? Created("", response) : BadRequest(response);
-    }
-
     [HttpPost("signup/admin")]
+    [Authorize(Roles="Admin")]
     public async Task<IActionResult> SignUpAdmin(RegisterDTO registerDto)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
         }
-        var response = await _accountService.RegisterAsync(registerDto, UserRole.Admin);
+        var response = await _accountService.RegisterAsync(registerDto);
         return response.IsSuccess ? Created("", response) : BadRequest(response);
     }
 
