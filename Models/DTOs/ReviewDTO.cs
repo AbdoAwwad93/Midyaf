@@ -11,5 +11,5 @@ public class ReviewDTO
     public int Rate { get; set; }
 
     [Required]
-    public int HotelId { get; set; }
+    public int PropertyId { get; set; }
 }

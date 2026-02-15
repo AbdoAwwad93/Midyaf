@@ -8,7 +8,7 @@ namespace Midyaf.Models.Mapping
     {
         public MappingProfile()
         {
-            CreateMap<Hotel,HotelDTO>().ReverseMap();
+            CreateMap<Property,PropertyDTO>().ReverseMap();
             CreateMap<AppUser, RegisterDTO>().ReverseMap();
             CreateMap<Room, RoomDTO>().ReverseMap();
             CreateMap<Reservation, ReservationDTO>().ReverseMap();

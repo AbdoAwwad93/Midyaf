@@ -27,12 +27,12 @@ public class RoomTypeService : IRoomTypeService
         return ApiResponse.SuccessResponse("Room Types retrieved successfully", roomTypeDtos);
     }
 
-    public async Task<ApiResponse> GetRoomTypesByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetRoomTypesByPropertyIdAsync(int PropertyId)
     {
-        var roomTypes = await _unitOfWork.RoomTypes.FindAsync(rt => rt.HotelId == hotelId);
+        var roomTypes = await _unitOfWork.RoomTypes.FindAsync(rt => rt.PropertyId == PropertyId);
         if (!roomTypes.Any())
         {
-            return ApiResponse.SuccessResponse($"No room types found for hotel {hotelId}", new List<RoomTypeDTO>());
+            return ApiResponse.SuccessResponse($"No room types found for Property {PropertyId}", new List<RoomTypeDTO>());
         }
         var roomTypeDtos = _mapper.Map<IEnumerable<RoomTypeDTO>>(roomTypes);
         return ApiResponse.SuccessResponse("Room Types retrieved successfully", roomTypeDtos);
@@ -51,10 +51,10 @@ public class RoomTypeService : IRoomTypeService
 
     public async Task<ApiResponse> AddRoomTypeAsync(RoomTypeDTO roomTypeDto)
     {
-        var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomTypeDto.HotelId);
-        if (hotel == null)
+        var Property = await _unitOfWork.Propertys.GetByIdAsync(roomTypeDto.PropertyId);
+        if (Property == null)
         {
-            return ApiResponse.FailureResponse("Hotel not found");
+            return ApiResponse.FailureResponse("Property not found");
         }
 
         var roomType = _mapper.Map<RoomType>(roomTypeDto);
@@ -72,12 +72,12 @@ public class RoomTypeService : IRoomTypeService
         {
             return ApiResponse.FailureResponse("Room Type not found");
         }
-        if (roomType.HotelId != roomTypeDto.HotelId)
+        if (roomType.PropertyId != roomTypeDto.PropertyId)
         {
-             var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomTypeDto.HotelId);
-             if (hotel == null)
+             var Property = await _unitOfWork.Propertys.GetByIdAsync(roomTypeDto.PropertyId);
+             if (Property == null)
              {
-                 return ApiResponse.FailureResponse("Target Hotel not found");
+                 return ApiResponse.FailureResponse("Target Property not found");
              }
         }
 
@@ -85,7 +85,7 @@ public class RoomTypeService : IRoomTypeService
         roomType.Description = roomTypeDto.Description;
         roomType.Price = roomTypeDto.Price;
         roomType.Capacity = roomTypeDto.Capacity;
-        roomType.HotelId = roomTypeDto.HotelId;
+        roomType.PropertyId = roomTypeDto.PropertyId;
 
         await _unitOfWork.RoomTypes.UpdateAsync(roomType);
         await _unitOfWork.SaveAsync();

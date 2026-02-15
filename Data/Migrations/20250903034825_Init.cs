@@ -59,7 +59,7 @@ namespace Midyaf.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Hotels",
+                name: "Propertys",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
@@ -71,7 +71,7 @@ namespace Midyaf.Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Hotels", x => x.Id);
+                    table.PrimaryKey("PK_Propertys", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -215,7 +215,7 @@ namespace Midyaf.Data.Migrations
                     Comment = table.Column<string>(type: "text", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Rate = table.Column<int>(type: "integer", nullable: false),
-                    HotelId = table.Column<int>(type: "integer", nullable: false),
+                    PropertyId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     AppUserId = table.Column<string>(type: "text", nullable: false)
                 },
@@ -229,9 +229,9 @@ namespace Midyaf.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reviews_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
+                        name: "FK_Reviews_Propertys_PropertyId",
+                        column: x => x.PropertyId,
+                        principalTable: "Propertys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -247,7 +247,7 @@ namespace Midyaf.Data.Migrations
                     Capacity = table.Column<int>(type: "integer", nullable: false),
                     IsAvailable = table.Column<bool>(type: "boolean", nullable: false),
                     ImagesUrls = table.Column<List<string>>(type: "text[]", nullable: false),
-                    HotelId = table.Column<int>(type: "integer", nullable: false),
+                    PropertyId = table.Column<int>(type: "integer", nullable: false),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     ReservationId = table.Column<int>(type: "integer", nullable: false)
@@ -262,9 +262,9 @@ namespace Midyaf.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Rooms_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
+                        name: "FK_Rooms_Propertys_PropertyId",
+                        column: x => x.PropertyId,
+                        principalTable: "Propertys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -323,9 +323,9 @@ namespace Midyaf.Data.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Reviews_HotelId",
+                name: "IX_Reviews_PropertyId",
                 table: "Reviews",
-                column: "HotelId");
+                column: "PropertyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_AppUserId",
@@ -333,9 +333,9 @@ namespace Midyaf.Data.Migrations
                 column: "AppUserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_HotelId",
+                name: "IX_Rooms_PropertyId",
                 table: "Rooms",
-                column: "HotelId");
+                column: "PropertyId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Rooms_ReservationId",
@@ -371,7 +371,7 @@ namespace Midyaf.Data.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Hotels");
+                name: "Propertys");
 
             migrationBuilder.DropTable(
                 name: "Reservations");

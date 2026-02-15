@@ -31,10 +31,10 @@ public class RoomTypeController : ControllerBase
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpGet("hotel/{hotelId:int}")]
-    public async Task<IActionResult> GetByHotelId(int hotelId)
+    [HttpGet("Property/{PropertyId:int}")]
+    public async Task<IActionResult> GetByPropertyId(int PropertyId)
     {
-        var response = await _roomTypeService.GetRoomTypesByHotelIdAsync(hotelId);
+        var response = await _roomTypeService.GetRoomTypesByPropertyIdAsync(PropertyId);
         return response.Success ? Ok(response) : NotFound(response);
     }
 

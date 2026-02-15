@@ -38,17 +38,17 @@ public class ReviewService : IReviewService
         return ApiResponse.FailureResponse("Review not found");
     }
 
-    public async Task<ApiResponse> GetReviewsByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetReviewsByPropertyIdAsync(int PropertyId)
     {
-        var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
-        if (hotel == null)
+        var Property = await _unitOfWork.Propertys.GetByIdAsync(PropertyId);
+        if (Property == null)
         {
-            return ApiResponse.FailureResponse("Hotel not found");
+            return ApiResponse.FailureResponse("Property not found");
         }
 
         var allReviews = await _unitOfWork.Reviews.GetAllAsync();
-        var hotelReviews = allReviews.Where(r => r.HotelId == hotelId).ToList();
-        return ApiResponse.SuccessResponse($"Reviews for hotel {hotelId} retrieved successfully", hotelReviews);
+        var PropertyReviews = allReviews.Where(r => r.PropertyId == PropertyId).ToList();
+        return ApiResponse.SuccessResponse($"Reviews for Property {PropertyId} retrieved successfully", PropertyReviews);
     }
 
     public async Task<ApiResponse> GetUserReviewsAsync(string userId)
@@ -60,10 +60,10 @@ public class ReviewService : IReviewService
 
     public async Task<ApiResponse> CreateReviewAsync(ReviewDTO reviewDto, string userId)
     {
-        var hotel = await _unitOfWork.Hotels.GetByIdAsync(reviewDto.HotelId);
-        if (hotel == null)
+        var Property = await _unitOfWork.Propertys.GetByIdAsync(reviewDto.PropertyId);
+        if (Property == null)
         {
-            return ApiResponse.FailureResponse("Hotel not found");
+            return ApiResponse.FailureResponse("Property not found");
         }
 
         var review = _mapper.Map<Review>(reviewDto);

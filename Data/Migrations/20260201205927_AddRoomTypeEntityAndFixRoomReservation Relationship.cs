@@ -63,15 +63,15 @@ namespace Midyaf.Data.Migrations
                     Description = table.Column<string>(type: "text", nullable: false),
                     Price = table.Column<decimal>(type: "numeric", nullable: false),
                     Capacity = table.Column<int>(type: "integer", nullable: false),
-                    HotelId = table.Column<int>(type: "integer", nullable: false)
+                    PropertyId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_RoomTypes", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RoomTypes_Hotels_HotelId",
-                        column: x => x.HotelId,
-                        principalTable: "Hotels",
+                        name: "FK_RoomTypes_Propertys_PropertyId",
+                        column: x => x.PropertyId,
+                        principalTable: "Propertys",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -87,9 +87,9 @@ namespace Midyaf.Data.Migrations
                 column: "RoomsId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RoomTypes_HotelId",
+                name: "IX_RoomTypes_PropertyId",
                 table: "RoomTypes",
-                column: "HotelId");
+                column: "PropertyId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_Rooms_RoomTypes_RoomTypeId",

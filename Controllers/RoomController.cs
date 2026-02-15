@@ -36,10 +36,10 @@ public class RoomController : ControllerBase
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpGet("hotel/{hotelId:int}")]
-    public async Task<IActionResult> GetRoomsByHotelId(int hotelId)
+    [HttpGet("Property/{PropertyId:int}")]
+    public async Task<IActionResult> GetRoomsByPropertyId(int PropertyId)
     {
-        var response = await _roomService.GetRoomsByHotelIdAsync(hotelId);
+        var response = await _roomService.GetRoomsByPropertyIdAsync(PropertyId);
         return response.Success ? Ok(response) : NotFound(response);
     }
 

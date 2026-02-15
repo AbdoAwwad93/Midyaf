@@ -32,10 +32,10 @@ public class ReviewController : ControllerBase
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpGet("hotel/{hotelId:int}")]
-    public async Task<IActionResult> GetReviewsByHotelId(int hotelId)
+    [HttpGet("Property/{PropertyId:int}")]
+    public async Task<IActionResult> GetReviewsByPropertyId(int PropertyId)
     {
-        var response = await _reviewService.GetReviewsByHotelIdAsync(hotelId);
+        var response = await _reviewService.GetReviewsByPropertyIdAsync(PropertyId);
         return response.Success ? Ok(response) : NotFound(response);
     }
 

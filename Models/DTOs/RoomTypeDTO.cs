@@ -18,5 +18,5 @@ public class RoomTypeDTO
     public int Capacity { get; set; }
     
     [Required]
-    public int HotelId { get; set; }
+    public int PropertyId { get; set; }
 }

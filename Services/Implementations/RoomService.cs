@@ -38,25 +38,25 @@ public class RoomService : IRoomService
         return ApiResponse.FailureResponse("Room not found");
     }
 
-    public async Task<ApiResponse> GetRoomsByHotelIdAsync(int hotelId)
+    public async Task<ApiResponse> GetRoomsByPropertyIdAsync(int PropertyId)
     {
-        var hotel = await _unitOfWork.Hotels.GetByIdAsync(hotelId);
-        if (hotel == null)
+        var Property = await _unitOfWork.Propertys.GetByIdAsync(PropertyId);
+        if (Property == null)
         {
-            return ApiResponse.FailureResponse("Hotel not found");
+            return ApiResponse.FailureResponse("Property not found");
         }
 
         var allRooms = await _unitOfWork.Rooms.GetAllAsync();
-        var hotelRooms = allRooms.Where(r => r.HotelId == hotelId).ToList();
-        return ApiResponse.SuccessResponse($"Rooms for hotel {hotelId} retrieved successfully", hotelRooms);
+        var PropertyRooms = allRooms.Where(r => r.PropertyId == PropertyId).ToList();
+        return ApiResponse.SuccessResponse($"Rooms for Property {PropertyId} retrieved successfully", PropertyRooms);
     }
 
     public async Task<ApiResponse> AddRoomAsync(RoomDTO roomDto)
     {
-        var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomDto.HotelId);
-        if (hotel == null)
+        var Property = await _unitOfWork.Propertys.GetByIdAsync(roomDto.PropertyId);
+        if (Property == null)
         {
-            return ApiResponse.FailureResponse("Hotel not found");
+            return ApiResponse.FailureResponse("Property not found");
         }
 
         if (roomDto.RoomTypeId.HasValue)
@@ -81,12 +81,12 @@ public class RoomService : IRoomService
         {
             return ApiResponse.FailureResponse("Room not found");
         }
-        if (room.HotelId != roomDto.HotelId)
+        if (room.PropertyId != roomDto.PropertyId)
         {
-            var hotel = await _unitOfWork.Hotels.GetByIdAsync(roomDto.HotelId);
-            if (hotel == null)
+            var Property = await _unitOfWork.Propertys.GetByIdAsync(roomDto.PropertyId);
+            if (Property == null)
             {
-                return ApiResponse.FailureResponse("Hotel not found");
+                return ApiResponse.FailureResponse("Property not found");
             }
         }
 

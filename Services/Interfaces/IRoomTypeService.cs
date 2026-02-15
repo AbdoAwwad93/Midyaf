@@ -6,7 +6,7 @@ namespace Midyaf.Services.Interfaces;
 public interface IRoomTypeService
 {
     Task<ApiResponse> GetAllRoomTypesAsync();
-    Task<ApiResponse> GetRoomTypesByHotelIdAsync(int hotelId);
+    Task<ApiResponse> GetRoomTypesByPropertyIdAsync(int PropertyId);
     Task<ApiResponse> GetRoomTypeByIdAsync(int id);
     Task<ApiResponse> AddRoomTypeAsync(RoomTypeDTO roomTypeDto);
     Task<ApiResponse> UpdateRoomTypeAsync(int id, RoomTypeDTO roomTypeDto);

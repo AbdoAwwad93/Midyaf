@@ -7,7 +7,7 @@ public interface IRoomService
 {
     Task<ApiResponse> GetAllRoomsAsync();
     Task<ApiResponse> GetRoomByIdAsync(int id);
-    Task<ApiResponse> GetRoomsByHotelIdAsync(int hotelId);
+    Task<ApiResponse> GetRoomsByPropertyIdAsync(int PropertyId);
     Task<ApiResponse> AddRoomAsync(RoomDTO roomDto);
     Task<ApiResponse> UpdateRoomAsync(int id, RoomDTO roomDto);
     Task<ApiResponse> DeleteRoomAsync(int id);

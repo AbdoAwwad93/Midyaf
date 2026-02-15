@@ -6,7 +6,7 @@ namespace Midyaf.UnitOfWork;
 public interface IUnitOfWork:IDisposable
 {
     IGenericRepository<AppUser>  Users { get; }
-    IGenericRepository<Hotel> Hotels  { get; }
+    IGenericRepository<Property> Propertys  { get; }
     IGenericRepository<Room> Rooms { get; }
     IGenericRepository<Reservation> Reservations { get; }
     IGenericRepository<Review> Reviews { get; }

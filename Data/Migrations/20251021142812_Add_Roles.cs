@@ -12,7 +12,7 @@ namespace Midyaf.Data.Migrations
         {
             migrationBuilder.AddColumn<string>(
                 name: "ManagerId",
-                table: "Hotels",
+                table: "Propertys",
                 type: "text",
                 nullable: false,
                 defaultValue: "");
@@ -24,13 +24,13 @@ namespace Midyaf.Data.Migrations
                 nullable: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Hotels_ManagerId",
-                table: "Hotels",
+                name: "IX_Propertys_ManagerId",
+                table: "Propertys",
                 column: "ManagerId");
 
             migrationBuilder.AddForeignKey(
-                name: "FK_Hotels_AspNetUsers_ManagerId",
-                table: "Hotels",
+                name: "FK_Propertys_AspNetUsers_ManagerId",
+                table: "Propertys",
                 column: "ManagerId",
                 principalTable: "AspNetUsers",
                 principalColumn: "Id",
@@ -41,16 +41,16 @@ namespace Midyaf.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropForeignKey(
-                name: "FK_Hotels_AspNetUsers_ManagerId",
-                table: "Hotels");
+                name: "FK_Propertys_AspNetUsers_ManagerId",
+                table: "Propertys");
 
             migrationBuilder.DropIndex(
-                name: "IX_Hotels_ManagerId",
-                table: "Hotels");
+                name: "IX_Propertys_ManagerId",
+                table: "Propertys");
 
             migrationBuilder.DropColumn(
                 name: "ManagerId",
-                table: "Hotels");
+                table: "Propertys");
 
             migrationBuilder.DropColumn(
                 name: "Role",

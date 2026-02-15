@@ -8,73 +8,73 @@ namespace Midyaf.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class HotelController : ControllerBase
+public class PropertyController : ControllerBase
 {
-    private readonly IHotelService _hotelService;
+    private readonly IPropertyService _PropertyService;
     private readonly IFileService _fileService;
 
-    public HotelController(IHotelService hotelService, IFileService fileService)
+    public PropertyController(IPropertyService PropertyService, IFileService fileService)
     {
-        _hotelService = hotelService;
+        _PropertyService = PropertyService;
         _fileService = fileService;
     }
 
-    [HttpGet("/hotel")]
-    public async Task<IActionResult> GetAllHotels()
+    [HttpGet("/Property")]
+    public async Task<IActionResult> GetAllPropertys()
     {
-        var response = await _hotelService.GetAllHotelsAsync();
+        var response = await _PropertyService.GetAllPropertysAsync();
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpGet("/hotel/search")]
-    public async Task<IActionResult> SearchHotels([FromQuery] HotelSearchDTO searchDto)
+    [HttpGet("/Property/search")]
+    public async Task<IActionResult> SearchPropertys([FromQuery] PropertySearchDTO searchDto)
     {
-        var response = await _hotelService.SearchHotelsAsync(searchDto);
+        var response = await _PropertyService.SearchPropertysAsync(searchDto);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpGet("/hotel/{id:int}")]
-    public async Task<IActionResult> GetHotelById(int id)
+    [HttpGet("/Property/{id:int}")]
+    public async Task<IActionResult> GetPropertyById(int id)
     {
-        var response = await _hotelService.GetHotelByIdAsync(id);
+        var response = await _PropertyService.GetPropertyByIdAsync(id);
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpPost("/hotel/add")]
+    [HttpPost("/Property/add")]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Add(HotelDTO hotelDto)
+    public async Task<IActionResult> Add(PropertyDTO PropertyDto)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
-        var response = await _hotelService.AddHotelAsync(hotelDto);
+        var response = await _PropertyService.AddPropertyAsync(PropertyDto);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPatch("/hotel/edit/{id:int}")]
+    [HttpPatch("/Property/edit/{id:int}")]
     [Authorize(Roles = "Admin,Manager")]
-    public async Task<IActionResult> Edit(int id, HotelDTO hotelDto)
+    public async Task<IActionResult> Edit(int id, PropertyDTO PropertyDto)
     {
         if (!ModelState.IsValid)
         {
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
-        var response = await _hotelService.UpdateHotelAsync(id, hotelDto);
+        var response = await _PropertyService.UpdatePropertyAsync(id, PropertyDto);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpDelete("hotel/delete/{id:int}")]
+    [HttpDelete("Property/delete/{id:int}")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Delete(int id)
     {
-        var response = await _hotelService.DeleteHotelAsync(id);
+        var response = await _PropertyService.DeletePropertyAsync(id);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPost("/hotel/{id:int}/images")]
+    [HttpPost("/Property/{id:int}/images")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> UploadImage(int id, IFormFile file)
     {
@@ -88,17 +88,17 @@ public class HotelController : ControllerBase
         {
             return BadRequest(ApiResponse.FailureResponse("Invalid file type. Allowed types: jpg, jpeg, png, webp"));
         }
-        var imageUrl = await _fileService.SaveFileAsync(file, "hotels");
-        var response = await _hotelService.AddHotelImageAsync(id, imageUrl);
+        var imageUrl = await _fileService.SaveFileAsync(file, "Propertys");
+        var response = await _PropertyService.AddPropertyImageAsync(id, imageUrl);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpDelete("/hotel/{id:int}/images")]
+    [HttpDelete("/Property/{id:int}/images")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> DeleteImage(int id, [FromQuery] string imageUrl)
     {
-        _fileService.DeleteFile(imageUrl, "hotels");
-        var response = await _hotelService.RemoveHotelImageAsync(id, imageUrl);
+        _fileService.DeleteFile(imageUrl, "Propertys");
+        var response = await _PropertyService.RemovePropertyImageAsync(id, imageUrl);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 }

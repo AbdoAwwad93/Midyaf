@@ -10,9 +10,9 @@ public class RoomType
     public decimal Price { get; set; }
     public int Capacity { get; set; }
     
-    [ForeignKey("Hotel")]
-    public int HotelId { get; set; }
-    public virtual Hotel Hotel { get; set; }
+    [ForeignKey("Property")]
+    public int PropertyId { get; set; }
+    public virtual Property Property { get; set; }
     
     public virtual ICollection<Room> Rooms { get; set; }
 }

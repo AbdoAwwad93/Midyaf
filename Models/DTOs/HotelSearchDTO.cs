@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Midyaf.Models.DTOs;
 
-public class HotelSearchDTO
+public class PropertySearchDTO
 {
     public string? Name { get; set; }
     public string? City { get; set; }

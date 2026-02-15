@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Midyaf.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class AddHotelImages : Migration
+    public partial class AddPropertyImages : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<List<string>>(
                 name: "Images",
-                table: "Hotels",
+                table: "Propertys",
                 type: "text[]",
                 nullable: false);
         }
@@ -23,7 +23,7 @@ namespace Midyaf.Data.Migrations
         {
             migrationBuilder.DropColumn(
                 name: "Images",
-                table: "Hotels");
+                table: "Propertys");
         }
     }
 }

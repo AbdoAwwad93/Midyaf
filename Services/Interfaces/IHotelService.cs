@@ -3,14 +3,14 @@ using Midyaf.Models.Response;
 
 namespace Midyaf.Services.Interfaces;
 
-public interface IHotelService
+public interface IPropertyService
 {
-    Task<ApiResponse> GetAllHotelsAsync();
-    Task<ApiResponse> GetHotelByIdAsync(int id);
-    Task<ApiResponse> AddHotelAsync(HotelDTO hotelDto);
-    Task<ApiResponse> UpdateHotelAsync(int id, HotelDTO hotelDto);
-    Task<ApiResponse> DeleteHotelAsync(int id);
-    Task<ApiResponse> SearchHotelsAsync(HotelSearchDTO searchDto);
-    Task<ApiResponse> AddHotelImageAsync(int hotelId, string imageUrl);
-    Task<ApiResponse> RemoveHotelImageAsync(int hotelId, string imageUrl);
+    Task<ApiResponse> GetAllPropertysAsync();
+    Task<ApiResponse> GetPropertyByIdAsync(int id);
+    Task<ApiResponse> AddPropertyAsync(PropertyDTO PropertyDto);
+    Task<ApiResponse> UpdatePropertyAsync(int id, PropertyDTO PropertyDto);
+    Task<ApiResponse> DeletePropertyAsync(int id);
+    Task<ApiResponse> SearchPropertysAsync(PropertySearchDTO searchDto);
+    Task<ApiResponse> AddPropertyImageAsync(int PropertyId, string imageUrl);
+    Task<ApiResponse> RemovePropertyImageAsync(int PropertyId, string imageUrl);
 }

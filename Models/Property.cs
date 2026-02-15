@@ -1,6 +1,6 @@
 namespace Midyaf.Models;
 
-public class Hotel
+public class Property
 {
     public int  Id { get; set; }
     public string Name { get; set; }
@@ -13,4 +13,5 @@ public class Hotel
     public virtual List<Room> Rooms { get; set; }
     public virtual List<RoomType> RoomTypes { get; set; }
     public List<string> Images { get; set; } = new List<string>();
+    public PropertyType PropertyType {get;set;}
 }

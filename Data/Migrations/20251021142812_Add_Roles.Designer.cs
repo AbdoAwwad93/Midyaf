@@ -231,7 +231,7 @@ namespace Midyaf.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Midyaf.Models.Hotel", b =>
+            modelBuilder.Entity("Midyaf.Models.Property", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -263,7 +263,7 @@ namespace Midyaf.Data.Migrations
 
                     b.HasIndex("ManagerId");
 
-                    b.ToTable("Hotels");
+                    b.ToTable("Propertys");
                 });
 
             modelBuilder.Entity("Midyaf.Models.Reservation", b =>
@@ -326,7 +326,7 @@ namespace Midyaf.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("HotelId")
+                    b.Property<int>("PropertyId")
                         .HasColumnType("integer");
 
                     b.Property<int>("Rate")
@@ -340,7 +340,7 @@ namespace Midyaf.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("HotelId");
+                    b.HasIndex("PropertyId");
 
                     b.ToTable("Reviews");
                 });
@@ -360,7 +360,7 @@ namespace Midyaf.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("HotelId")
+                    b.Property<int>("PropertyId")
                         .HasColumnType("integer");
 
                     b.PrimitiveCollection<List<string>>("ImagesUrls")
@@ -388,7 +388,7 @@ namespace Midyaf.Data.Migrations
 
                     b.HasIndex("AppUserId");
 
-                    b.HasIndex("HotelId");
+                    b.HasIndex("PropertyId");
 
                     b.HasIndex("ReservationId");
 
@@ -477,10 +477,10 @@ namespace Midyaf.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Midyaf.Models.Hotel", b =>
+            modelBuilder.Entity("Midyaf.Models.Property", b =>
                 {
                     b.HasOne("Midyaf.Models.AppUser", "Manager")
-                        .WithMany("ManagedHotels")
+                        .WithMany("ManagedPropertys")
                         .HasForeignKey("ManagerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -507,15 +507,15 @@ namespace Midyaf.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Midyaf.Models.Hotel", "Hotel")
+                    b.HasOne("Midyaf.Models.Property", "Property")
                         .WithMany("Reviews")
-                        .HasForeignKey("HotelId")
+                        .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("Hotel");
+                    b.Navigation("Property");
                 });
 
             modelBuilder.Entity("Midyaf.Models.Room", b =>
@@ -526,9 +526,9 @@ namespace Midyaf.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Midyaf.Models.Hotel", "Hotel")
+                    b.HasOne("Midyaf.Models.Property", "Property")
                         .WithMany("Rooms")
-                        .HasForeignKey("HotelId")
+                        .HasForeignKey("PropertyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -540,12 +540,12 @@ namespace Midyaf.Data.Migrations
 
                     b.Navigation("AppUser");
 
-                    b.Navigation("Hotel");
+                    b.Navigation("Property");
 
                     b.Navigation("Reservation");
                 });
 
-            modelBuilder.Entity("Midyaf.Models.Hotel", b =>
+            modelBuilder.Entity("Midyaf.Models.Property", b =>
                 {
                     b.Navigation("Reviews");
 
@@ -559,7 +559,7 @@ namespace Midyaf.Data.Migrations
 
             modelBuilder.Entity("Midyaf.Models.AppUser", b =>
                 {
-                    b.Navigation("ManagedHotels");
+                    b.Navigation("ManagedPropertys");
 
                     b.Navigation("Reservations");
 

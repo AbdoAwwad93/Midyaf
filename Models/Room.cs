@@ -10,9 +10,9 @@ public class Room
     public int Capacity { get; set; }
     public bool IsAvailable { get; set; }
     public List<string> ImagesUrls { get; set; }
-    public virtual Hotel Hotel { get; set; }
-    [ForeignKey("Hotel")]
-    public int HotelId { get; set; }
+    public virtual Property Property { get; set; }
+    [ForeignKey("Property")]
+    public int PropertyId { get; set; }
     public virtual AppUser  AppUser { get; set; }
     [ForeignKey("User")]
     public string UserId { get; set; }

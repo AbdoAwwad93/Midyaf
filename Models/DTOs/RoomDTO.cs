@@ -15,6 +15,6 @@ public class RoomDTO
     public bool IsAvailable { get; set; } = true;
     public List<string>? ImagesUrls { get; set; }
     [Required]
-    public int HotelId { get; set; }
+    public int PropertyId { get; set; }
     public int? RoomTypeId { get; set; }
 }

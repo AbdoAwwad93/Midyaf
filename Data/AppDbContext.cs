@@ -7,7 +7,7 @@ namespace Midyaf.Data;
 public class AppDbContext:IdentityDbContext
 {
     public DbSet<AppUser> AppUsers { get; set; }
-    public DbSet<Hotel>  Hotels { get; set; }
+    public DbSet<Property>  Propertys { get; set; }
     public DbSet<Room>  Rooms { get; set; }
     public DbSet<Review>  Reviews { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
@@ -22,9 +22,9 @@ public class AppDbContext:IdentityDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<AppUser>().HasMany(user => user.ManagedHotels)
-            .WithOne(hotel => hotel.Manager)
-            .HasForeignKey(hotel=>hotel.ManagerId);
+        builder.Entity<AppUser>().HasMany(user => user.ManagedPropertys)
+            .WithOne(Property => Property.Manager)
+            .HasForeignKey(Property=>Property.ManagerId);
         builder.Entity<AppUser>().HasMany(user => user.Rooms)
             .WithOne(room => room.AppUser);
         builder.Entity<AppUser>().HasMany(user => user.Reviews)
@@ -32,10 +32,10 @@ public class AppDbContext:IdentityDbContext
         builder.Entity<AppUser>().HasMany(user => user.Reservations)
             .WithOne(reservation => reservation.AppUser);
 
-        builder.Entity<Hotel>().HasMany(hotel => hotel.Rooms)
-            .WithOne(room => room.Hotel);
-        builder.Entity<Hotel>().HasMany(hotel => hotel.Reviews)
-            .WithOne(review => review.Hotel);
+        builder.Entity<Property>().HasMany(Property => Property.Rooms)
+            .WithOne(room => room.Property);
+        builder.Entity<Property>().HasMany(Property => Property.Reviews)
+            .WithOne(review => review.Property);
         builder.Entity<Reservation>().Property(reservation => reservation.Status)
             .HasConversion<string>();
             
@@ -43,6 +43,8 @@ public class AppDbContext:IdentityDbContext
             .HasMany(r => r.Rooms)
             .WithMany(r => r.Reservations);
         builder.Entity<AppUser>().Property(user => user.Role)
+            .HasConversion<string>();
+            builder.Entity<Property>().Property(p=>p.PropertyType)
             .HasConversion<string>();
     }
 }

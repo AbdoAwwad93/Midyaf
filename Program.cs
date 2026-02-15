@@ -105,7 +105,7 @@ public class Program
         builder.Services.AddAutoMapper(typeof(MappingProfile));
         
         // Register Services
-        builder.Services.AddScoped<IHotelService, HotelService>();
+        builder.Services.AddScoped<IPropertyService, PropertyService>();
         builder.Services.AddScoped<IAccountService, AccountService>();
         builder.Services.AddScoped<IRoomService, RoomService>();
         builder.Services.AddScoped<IReservationService, ReservationService>();
