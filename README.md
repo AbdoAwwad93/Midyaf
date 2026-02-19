@@ -681,6 +681,7 @@ Authenticate a user and receive a JWT token.
   "success": true,
   "message": "Authentication successful",
   "data": {
+    "id":"09a61bb1-...",
     "firstName": "Abdulrahman",
     "lastName": "Awwad",
     "userName": "Awwad211",
