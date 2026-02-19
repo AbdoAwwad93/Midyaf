@@ -82,7 +82,8 @@ public class Program
             options.Password.RequireNonAlphanumeric = false;
             options.Password.RequireUppercase = false;
             options.Password.RequireLowercase = false;
-        }).AddEntityFrameworkStores<AppDbContext>();
+        }).AddEntityFrameworkStores<AppDbContext>()
+          .AddDefaultTokenProviders();
         
         var securityKey = Environment.GetEnvironmentVariable("SecurityKey");
         builder.Services.AddAuthentication(options =>
