@@ -8,9 +8,9 @@ public interface IUnitOfWork:IDisposable
     IGenericRepository<AppUser>  Users { get; }
     IPropertyRepository Propertys  { get; }
     IGenericRepository<Room> Rooms { get; }
-    IGenericRepository<Reservation> Reservations { get; }
+    IReservationRepository Reservations { get; }
     IGenericRepository<Review> Reviews { get; }
     IGenericRepository<RoomType> RoomTypes { get; }
-    IGenericRepository<PasswordResetOtp> PasswordResetOtps { get; }
+    IPasswordResetOtpRepository PasswordResetOtps { get; }
     Task <int> SaveAsync();
 }

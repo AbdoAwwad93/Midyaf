@@ -9,10 +9,10 @@ public class UnitOfwork:IUnitOfWork
     public IGenericRepository<AppUser> Users { get; }
     public IPropertyRepository Propertys { get; }
     public IGenericRepository<Room> Rooms { get; }
-    public IGenericRepository<Reservation> Reservations { get; }
+    public IReservationRepository Reservations { get; }
     public IGenericRepository<Review> Reviews { get; }
     public IGenericRepository<RoomType> RoomTypes { get; }
-    public IGenericRepository<PasswordResetOtp> PasswordResetOtps { get; }
+    public IPasswordResetOtpRepository PasswordResetOtps { get; }
 
     public UnitOfwork(AppDbContext context)
     {
@@ -20,10 +20,10 @@ public class UnitOfwork:IUnitOfWork
         Users = new GenericRepository<AppUser>(_context);
         Propertys = new PropertyRepository(_context);
         Rooms = new GenericRepository<Room>(_context);
-        Reservations = new GenericRepository<Reservation>(_context);
+        Reservations = new ReservationRepository(_context);
         Reviews = new GenericRepository<Review>(_context);
         RoomTypes = new GenericRepository<RoomType>(_context);
-        PasswordResetOtps = new GenericRepository<PasswordResetOtp>(_context);
+        PasswordResetOtps = new PasswordResetOtpRepository(_context);
         
     }
     

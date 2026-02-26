@@ -50,7 +50,7 @@ public class ReservationService : IReservationService
 
     public async Task<ApiResponse> GetUserReservationsAsync(string userId)
     {
-        var userReservations = await _unitOfWork.Reservations.FindAsync(r => r.UserId == userId);
+        var userReservations = await _unitOfWork.Reservations.GetByUserIdAsync(userId);
         return ApiResponse.SuccessResponse("User reservations retrieved successfully", userReservations);
     }
 

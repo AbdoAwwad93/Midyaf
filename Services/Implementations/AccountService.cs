@@ -84,7 +84,7 @@ public class AccountService : IAccountService
         }
 
         // Invalidate any existing OTPs for this user
-        var existingOtps = await _unitOfWork.PasswordResetOtps.FindAsync(o => o.UserId == user.Id && !o.IsUsed);
+        var existingOtps = await _unitOfWork.PasswordResetOtps.GetActiveOtpsAsync(user.Id);
         foreach (var existingOtp in existingOtps)
         {
             existingOtp.IsUsed = true;
@@ -119,11 +119,7 @@ public class AccountService : IAccountService
         }
 
         // Find valid OTP
-        var otpRecord = (await _unitOfWork.PasswordResetOtps.FindAsync(o =>
-            o.UserId == user.Id &&
-            o.Otp == resetPasswordDto.Otp &&
-            !o.IsUsed &&
-            o.ExpiresAt > DateTime.UtcNow)).FirstOrDefault();
+        var otpRecord = await _unitOfWork.PasswordResetOtps.GetValidOtpAsync(user.Id, resetPasswordDto.Otp, DateTime.UtcNow);
 
         if (otpRecord == null)
         {
