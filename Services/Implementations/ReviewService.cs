@@ -46,15 +46,13 @@ public class ReviewService : IReviewService
             return ApiResponse.FailureResponse("Property not found");
         }
 
-        var allReviews = await _unitOfWork.Reviews.GetAllAsync();
-        var PropertyReviews = allReviews.Where(r => r.PropertyId == PropertyId).ToList();
-        return ApiResponse.SuccessResponse($"Reviews for Property {PropertyId} retrieved successfully", PropertyReviews);
+        var propertyReviews = await _unitOfWork.Reviews.FindAsync(r => r.PropertyId == PropertyId);
+        return ApiResponse.SuccessResponse($"Reviews for Property {PropertyId} retrieved successfully", propertyReviews);
     }
 
     public async Task<ApiResponse> GetUserReviewsAsync(string userId)
     {
-        var allReviews = await _unitOfWork.Reviews.GetAllAsync();
-        var userReviews = allReviews.Where(r => r.UserId == userId).ToList();
+        var userReviews = await _unitOfWork.Reviews.FindAsync(r => r.UserId == userId);
         return ApiResponse.SuccessResponse("User reviews retrieved successfully", userReviews);
     }
 

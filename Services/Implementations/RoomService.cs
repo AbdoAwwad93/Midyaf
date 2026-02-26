@@ -46,9 +46,8 @@ public class RoomService : IRoomService
             return ApiResponse.FailureResponse("Property not found");
         }
 
-        var allRooms = await _unitOfWork.Rooms.GetAllAsync();
-        var PropertyRooms = allRooms.Where(r => r.PropertyId == PropertyId).ToList();
-        return ApiResponse.SuccessResponse($"Rooms for Property {PropertyId} retrieved successfully", PropertyRooms);
+        var propertyRooms = await _unitOfWork.Rooms.FindAsync(r => r.PropertyId == PropertyId);
+        return ApiResponse.SuccessResponse($"Rooms for Property {PropertyId} retrieved successfully", propertyRooms);
     }
 
     public async Task<ApiResponse> AddRoomAsync(RoomDTO roomDto)
