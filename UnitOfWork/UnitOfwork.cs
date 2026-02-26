@@ -12,6 +12,7 @@ public class UnitOfwork:IUnitOfWork
     public IGenericRepository<Reservation> Reservations { get; }
     public IGenericRepository<Review> Reviews { get; }
     public IGenericRepository<RoomType> RoomTypes { get; }
+    public IGenericRepository<PasswordResetOtp> PasswordResetOtps { get; }
 
     public UnitOfwork(AppDbContext context)
     {
@@ -22,6 +23,7 @@ public class UnitOfwork:IUnitOfWork
         Reservations = new GenericRepository<Reservation>(_context);
         Reviews = new GenericRepository<Review>(_context);
         RoomTypes = new GenericRepository<RoomType>(_context);
+        PasswordResetOtps = new GenericRepository<PasswordResetOtp>(_context);
         
     }
     

@@ -11,5 +11,6 @@ public interface IUnitOfWork:IDisposable
     IGenericRepository<Reservation> Reservations { get; }
     IGenericRepository<Review> Reviews { get; }
     IGenericRepository<RoomType> RoomTypes { get; }
+    IGenericRepository<PasswordResetOtp> PasswordResetOtps { get; }
     Task <int> SaveAsync();
 }

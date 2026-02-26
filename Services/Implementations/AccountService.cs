@@ -3,14 +3,13 @@ using System.Security.Claims;
 using System.Text;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Midyaf.Data;
 using Midyaf.Models;
 using Midyaf.Models.DTOs;
 using Midyaf.Models.Enums;
 using Midyaf.Models.Response;
 using Midyaf.Services.Interfaces;
+using Midyaf.UnitOfWork;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace Midyaf.Services.Implementations;
@@ -21,20 +20,20 @@ public class AccountService : IAccountService
     private readonly UserManager<AppUser> _userManager;
     private readonly IMapper _mapper;
     private readonly IEmailService _emailService;
-    private readonly AppDbContext _context;
+    private readonly IUnitOfWork _unitOfWork;
 
     public AccountService(
         SignInManager<AppUser> signInManager,
         UserManager<AppUser> userManager,
         IMapper mapper,
         IEmailService emailService,
-        AppDbContext context)
+        IUnitOfWork unitOfWork)
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _mapper = mapper;
         _emailService = emailService;
-        _context = context;
+        _unitOfWork = unitOfWork;
     }
 
     public async Task<ApiResponse> RegisterAsync(RegisterDTO registerDto)
@@ -85,9 +84,7 @@ public class AccountService : IAccountService
         }
 
         // Invalidate any existing OTPs for this user
-        var existingOtps = await _context.PasswordResetOtps
-            .Where(o => o.UserId == user.Id && !o.IsUsed)
-            .ToListAsync();
+        var existingOtps = await _unitOfWork.PasswordResetOtps.FindAsync(o => o.UserId == user.Id && !o.IsUsed);
         foreach (var existingOtp in existingOtps)
         {
             existingOtp.IsUsed = true;
@@ -104,8 +101,8 @@ public class AccountService : IAccountService
             CreatedAt = DateTime.UtcNow,
             ExpiresAt = DateTime.UtcNow.AddMinutes(10)
         };
-        _context.PasswordResetOtps.Add(passwordResetOtp);
-        await _context.SaveChangesAsync();
+        await _unitOfWork.PasswordResetOtps.AddAsync(passwordResetOtp);
+        await _unitOfWork.SaveAsync();
 
         // Send OTP via email
         await _emailService.SendOtpAsync(user.Email!, otp);
@@ -122,12 +119,11 @@ public class AccountService : IAccountService
         }
 
         // Find valid OTP
-        var otpRecord = await _context.PasswordResetOtps
-            .Where(o => o.UserId == user.Id && 
-                        o.Otp == resetPasswordDto.Otp && 
-                        !o.IsUsed && 
-                        o.ExpiresAt > DateTime.UtcNow)
-            .FirstOrDefaultAsync();
+        var otpRecord = (await _unitOfWork.PasswordResetOtps.FindAsync(o =>
+            o.UserId == user.Id &&
+            o.Otp == resetPasswordDto.Otp &&
+            !o.IsUsed &&
+            o.ExpiresAt > DateTime.UtcNow)).FirstOrDefault();
 
         if (otpRecord == null)
         {
@@ -136,7 +132,7 @@ public class AccountService : IAccountService
 
         // Mark OTP as used
         otpRecord.IsUsed = true;
-        await _context.SaveChangesAsync();
+        await _unitOfWork.SaveAsync();
 
         // Reset password using Identity
         var token = await _userManager.GeneratePasswordResetTokenAsync(user);
