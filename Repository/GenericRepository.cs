@@ -6,8 +6,8 @@ namespace Midyaf.Repository;
 
 public class GenericRepository<T>:IGenericRepository<T> where T:class
 {
-    private readonly AppDbContext _context;
-    private readonly DbSet<T> _dbset;
+    protected readonly AppDbContext _context;
+    protected readonly DbSet<T> _dbset;
     public GenericRepository(AppDbContext context)
     {
         _context =context;

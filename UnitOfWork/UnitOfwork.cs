@@ -7,7 +7,7 @@ public class UnitOfwork:IUnitOfWork
 {
     private readonly AppDbContext _context;
     public IGenericRepository<AppUser> Users { get; }
-    public IGenericRepository<Property> Propertys { get; }
+    public IPropertyRepository Propertys { get; }
     public IGenericRepository<Room> Rooms { get; }
     public IGenericRepository<Reservation> Reservations { get; }
     public IGenericRepository<Review> Reviews { get; }
@@ -18,7 +18,7 @@ public class UnitOfwork:IUnitOfWork
     {
         _context = context;
         Users = new GenericRepository<AppUser>(_context);
-        Propertys = new GenericRepository<Property>(_context);
+        Propertys = new PropertyRepository(_context);
         Rooms = new GenericRepository<Room>(_context);
         Reservations = new GenericRepository<Reservation>(_context);
         Reviews = new GenericRepository<Review>(_context);

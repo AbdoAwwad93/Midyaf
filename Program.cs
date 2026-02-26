@@ -74,6 +74,7 @@ public class Program
             option.UseLazyLoadingProxies();
         });
         builder.Services.AddScoped(typeof(IGenericRepository<>),typeof(GenericRepository<>));
+        builder.Services.AddScoped<IPropertyRepository, PropertyRepository>();
         builder.Services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfwork));
         builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
         {
