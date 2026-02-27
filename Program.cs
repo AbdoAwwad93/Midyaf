@@ -56,6 +56,12 @@ public class Program
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
         });
         
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll",
+                policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+        });
+        
         builder.Services.AddControllers().ConfigureApiBehaviorOptions(option =>
         {
             option.SuppressModelStateInvalidFilter = false;
@@ -63,6 +69,7 @@ public class Program
         .AddJsonOptions(options =>
         {
             options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
         });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
@@ -138,6 +145,8 @@ public class Program
         app.UseHttpsRedirection();
         app.UseStaticFiles();
         app.UseRateLimiter();
+
+        app.UseCors("AllowAll");
 
         app.UseAuthentication();
         app.UseAuthorization();

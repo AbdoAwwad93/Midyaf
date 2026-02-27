@@ -40,7 +40,7 @@ public class ReviewService : IReviewService
 
     public async Task<ApiResponse> GetReviewsByPropertyIdAsync(int PropertyId)
     {
-        var Property = await _unitOfWork.Propertys.GetByIdAsync(PropertyId);
+        var Property = await _unitOfWork.Properties.GetByIdAsync(PropertyId);
         if (Property == null)
         {
             return ApiResponse.FailureResponse("Property not found");
@@ -58,7 +58,7 @@ public class ReviewService : IReviewService
 
     public async Task<ApiResponse> CreateReviewAsync(ReviewDTO reviewDto, string userId)
     {
-        var Property = await _unitOfWork.Propertys.GetByIdAsync(reviewDto.PropertyId);
+        var Property = await _unitOfWork.Properties.GetByIdAsync(reviewDto.PropertyId);
         if (Property == null)
         {
             return ApiResponse.FailureResponse("Property not found");

@@ -9,7 +9,7 @@ using Midyaf.Services.Interfaces;
 namespace Midyaf.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class AccountController : ControllerBase
 {
     private readonly IAccountService _accountService;
@@ -27,7 +27,7 @@ public class AccountController : ControllerBase
             var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage).ToList();
             return BadRequest(ApiResponse.FailureResponse("Validation failed", errors));
         }
-        if(registerDto.Role != UserRole.Admin)
+        if(registerDto.Role == UserRole.Admin)
         {
             return BadRequest(ApiResponse.FailureResponse("Validation failed",new List<string> {"Invalid Role it must be User Or Manager"}));
         }

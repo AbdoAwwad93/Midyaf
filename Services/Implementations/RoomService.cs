@@ -40,7 +40,7 @@ public class RoomService : IRoomService
 
     public async Task<ApiResponse> GetRoomsByPropertyIdAsync(int PropertyId)
     {
-        var Property = await _unitOfWork.Propertys.GetByIdAsync(PropertyId);
+        var Property = await _unitOfWork.Properties.GetByIdAsync(PropertyId);
         if (Property == null)
         {
             return ApiResponse.FailureResponse("Property not found");
@@ -52,7 +52,7 @@ public class RoomService : IRoomService
 
     public async Task<ApiResponse> AddRoomAsync(RoomDTO roomDto)
     {
-        var Property = await _unitOfWork.Propertys.GetByIdAsync(roomDto.PropertyId);
+        var Property = await _unitOfWork.Properties.GetByIdAsync(roomDto.PropertyId);
         if (Property == null)
         {
             return ApiResponse.FailureResponse("Property not found");
@@ -82,7 +82,7 @@ public class RoomService : IRoomService
         }
         if (room.PropertyId != roomDto.PropertyId)
         {
-            var Property = await _unitOfWork.Propertys.GetByIdAsync(roomDto.PropertyId);
+            var Property = await _unitOfWork.Properties.GetByIdAsync(roomDto.PropertyId);
             if (Property == null)
             {
                 return ApiResponse.FailureResponse("Property not found");

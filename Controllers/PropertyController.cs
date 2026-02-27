@@ -19,29 +19,29 @@ public class PropertyController : ControllerBase
         _fileService = fileService;
     }
 
-    [HttpGet("/Property")]
-    public async Task<IActionResult> GetAllPropertys()
+    [HttpGet]
+    public async Task<IActionResult> GetAllProperties()
     {
-        var response = await _PropertyService.GetAllPropertysAsync();
+        var response = await _PropertyService.GetAllPropertiesAsync();
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpGet("/Property/search")]
-    public async Task<IActionResult> SearchPropertys([FromQuery] PropertySearchDTO searchDto)
+    [HttpGet("search")]
+    public async Task<IActionResult> SearchProperties([FromQuery] PropertySearchDTO searchDto)
     {
-        var response = await _PropertyService.SearchPropertysAsync(searchDto);
+        var response = await _PropertyService.SearchPropertiesAsync(searchDto);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpGet("/Property/{id:int}")]
+    [HttpGet("{id:int}")]
     public async Task<IActionResult> GetPropertyById(int id)
     {
         var response = await _PropertyService.GetPropertyByIdAsync(id);
         return response.Success ? Ok(response) : NotFound(response);
     }
 
-    [HttpPost("/Property/add")]
-    [Authorize(Roles = "Admin")]
+    [HttpPost("add")]
+    [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Add(PropertyDTO PropertyDto)
     {
         if (!ModelState.IsValid)
@@ -53,7 +53,7 @@ public class PropertyController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPatch("/Property/edit/{id:int}")]
+    [HttpPatch("edit/{id:int}")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Edit(int id, PropertyDTO PropertyDto)
     {
@@ -66,7 +66,7 @@ public class PropertyController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpDelete("Property/delete/{id:int}")]
+    [HttpDelete("delete/{id:int}")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> Delete(int id)
     {
@@ -74,7 +74,7 @@ public class PropertyController : ControllerBase
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpPost("/Property/{id:int}/images")]
+    [HttpPost("{id:int}/images")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> UploadImage(int id, IFormFile file)
     {
@@ -88,16 +88,16 @@ public class PropertyController : ControllerBase
         {
             return BadRequest(ApiResponse.FailureResponse("Invalid file type. Allowed types: jpg, jpeg, png, webp"));
         }
-        var imageUrl = await _fileService.SaveFileAsync(file, "Propertys");
+        var imageUrl = await _fileService.SaveFileAsync(file, "Properties");
         var response = await _PropertyService.AddPropertyImageAsync(id, imageUrl);
         return response.Success ? Ok(response) : BadRequest(response);
     }
 
-    [HttpDelete("/Property/{id:int}/images")]
+    [HttpDelete("{id:int}/images")]
     [Authorize(Roles = "Admin,Manager")]
     public async Task<IActionResult> DeleteImage(int id, [FromQuery] string imageUrl)
     {
-        _fileService.DeleteFile(imageUrl, "Propertys");
+        _fileService.DeleteFile(imageUrl, "Properties");
         var response = await _PropertyService.RemovePropertyImageAsync(id, imageUrl);
         return response.Success ? Ok(response) : BadRequest(response);
     }

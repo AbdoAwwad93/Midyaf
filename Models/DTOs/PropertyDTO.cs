@@ -15,5 +15,9 @@ namespace Midyaf.Models.DTOs
         public string City { get; set; }
         [RegularExpression("[a-zA-Z]+$")]
         public string Country { get; set; }
+        [Required]
+        public PropertyType PropertyType { get; set; }
+        [Required]
+        public string ManagerId { get; set; }
     }
 }

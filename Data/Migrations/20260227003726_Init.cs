@@ -38,6 +38,7 @@ namespace Midyaf.Data.Migrations
                     Country = table.Column<string>(type: "text", nullable: true),
                     City = table.Column<string>(type: "text", nullable: true),
                     Address = table.Column<string>(type: "text", nullable: true),
+                    Role = table.Column<string>(type: "text", nullable: true),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -56,22 +57,6 @@ namespace Midyaf.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Propertys",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    Address = table.Column<string>(type: "text", nullable: false),
-                    City = table.Column<string>(type: "text", nullable: false),
-                    Country = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Propertys", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -181,6 +166,54 @@ namespace Midyaf.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PasswordResetOtps",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Otp = table.Column<string>(type: "character varying(6)", maxLength: 6, nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    IsUsed = table.Column<bool>(type: "boolean", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PasswordResetOtps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PasswordResetOtps_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Properties",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    City = table.Column<string>(type: "text", nullable: false),
+                    Country = table.Column<string>(type: "text", nullable: false),
+                    ManagerId = table.Column<string>(type: "text", nullable: false),
+                    Images = table.Column<List<string>>(type: "text[]", nullable: false),
+                    PropertyType = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Properties", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Properties_AspNetUsers_ManagerId",
+                        column: x => x.ManagerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Reservations",
                 columns: table => new
                 {
@@ -229,9 +262,32 @@ namespace Midyaf.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Reviews_Propertys_PropertyId",
+                        name: "FK_Reviews_Properties_PropertyId",
                         column: x => x.PropertyId,
-                        principalTable: "Propertys",
+                        principalTable: "Properties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RoomTypes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
+                    Price = table.Column<decimal>(type: "numeric", nullable: false),
+                    Capacity = table.Column<int>(type: "integer", nullable: false),
+                    PropertyId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RoomTypes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_RoomTypes_Properties_PropertyId",
+                        column: x => x.PropertyId,
+                        principalTable: "Properties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -250,7 +306,7 @@ namespace Midyaf.Data.Migrations
                     PropertyId = table.Column<int>(type: "integer", nullable: false),
                     AppUserId = table.Column<string>(type: "text", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    ReservationId = table.Column<int>(type: "integer", nullable: false)
+                    RoomTypeId = table.Column<int>(type: "integer", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -262,15 +318,38 @@ namespace Midyaf.Data.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Rooms_Propertys_PropertyId",
+                        name: "FK_Rooms_Properties_PropertyId",
                         column: x => x.PropertyId,
-                        principalTable: "Propertys",
+                        principalTable: "Properties",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Rooms_Reservations_ReservationId",
-                        column: x => x.ReservationId,
+                        name: "FK_Rooms_RoomTypes_RoomTypeId",
+                        column: x => x.RoomTypeId,
+                        principalTable: "RoomTypes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ReservationRoom",
+                columns: table => new
+                {
+                    ReservationsId = table.Column<int>(type: "integer", nullable: false),
+                    RoomsId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReservationRoom", x => new { x.ReservationsId, x.RoomsId });
+                    table.ForeignKey(
+                        name: "FK_ReservationRoom_Reservations_ReservationsId",
+                        column: x => x.ReservationsId,
                         principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ReservationRoom_Rooms_RoomsId",
+                        column: x => x.RoomsId,
+                        principalTable: "Rooms",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -313,6 +392,21 @@ namespace Midyaf.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PasswordResetOtps_UserId",
+                table: "PasswordResetOtps",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Properties_ManagerId",
+                table: "Properties",
+                column: "ManagerId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ReservationRoom_RoomsId",
+                table: "ReservationRoom",
+                column: "RoomsId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Reservations_AppUserId",
                 table: "Reservations",
                 column: "AppUserId");
@@ -338,9 +432,14 @@ namespace Midyaf.Data.Migrations
                 column: "PropertyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Rooms_ReservationId",
+                name: "IX_Rooms_RoomTypeId",
                 table: "Rooms",
-                column: "ReservationId");
+                column: "RoomTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RoomTypes_PropertyId",
+                table: "RoomTypes",
+                column: "PropertyId");
         }
 
         /// <inheritdoc />
@@ -362,19 +461,28 @@ namespace Midyaf.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Reviews");
+                name: "PasswordResetOtps");
 
             migrationBuilder.DropTable(
-                name: "Rooms");
+                name: "ReservationRoom");
+
+            migrationBuilder.DropTable(
+                name: "Reviews");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Propertys");
+                name: "Reservations");
 
             migrationBuilder.DropTable(
-                name: "Reservations");
+                name: "Rooms");
+
+            migrationBuilder.DropTable(
+                name: "RoomTypes");
+
+            migrationBuilder.DropTable(
+                name: "Properties");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

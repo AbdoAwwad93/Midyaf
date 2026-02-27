@@ -7,7 +7,7 @@ namespace Midyaf.Data;
 public class AppDbContext:IdentityDbContext
 {
     public DbSet<AppUser> AppUsers { get; set; }
-    public DbSet<Property>  Propertys { get; set; }
+    public DbSet<Property> Properties { get; set; }
     public DbSet<Room>  Rooms { get; set; }
     public DbSet<Review>  Reviews { get; set; }
     public DbSet<Reservation> Reservations { get; set; }
@@ -22,7 +22,7 @@ public class AppDbContext:IdentityDbContext
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<AppUser>().HasMany(user => user.ManagedPropertys)
+        builder.Entity<AppUser>().HasMany(user => user.ManagedProperties)
             .WithOne(Property => Property.Manager)
             .HasForeignKey(Property=>Property.ManagerId);
         builder.Entity<AppUser>().HasMany(user => user.Rooms)
@@ -46,5 +46,7 @@ public class AppDbContext:IdentityDbContext
             .HasConversion<string>();
             builder.Entity<Property>().Property(p=>p.PropertyType)
             .HasConversion<string>();
+        
+        builder.Entity<Property>().ToTable("Properties");
     }
 }

@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Midyaf.Data.Migrations
+namespace Midyaf.Migrations
 {
     [DbContext(typeof(AppDbContext))]
     partial class AppDbContextModelSnapshot : ModelSnapshot
@@ -228,6 +228,39 @@ namespace Midyaf.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Midyaf.Models.PasswordResetOtp", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Otp")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("PasswordResetOtps");
+                });
+
             modelBuilder.Entity("Midyaf.Models.Property", b =>
                 {
                     b.Property<int>("Id")
@@ -260,44 +293,15 @@ namespace Midyaf.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("ManagerId");
-
-                    b.ToTable("Propertys");
-                });
-
-            modelBuilder.Entity("Midyaf.Models.PasswordResetOtp", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("ExpiresAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsUsed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Otp")
-                        .IsRequired()
-                        .HasMaxLength(6)
-                        .HasColumnType("character varying(6)");
-
-                    b.Property<string>("UserId")
+                    b.Property<string>("PropertyType")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("ManagerId");
 
-                    b.ToTable("PasswordResetOtps");
+                    b.ToTable("Properties", (string)null);
                 });
 
             modelBuilder.Entity("Midyaf.Models.Reservation", b =>
@@ -394,9 +398,6 @@ namespace Midyaf.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("integer");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("integer");
-
                     b.PrimitiveCollection<List<string>>("ImagesUrls")
                         .IsRequired()
                         .HasColumnType("text[]");
@@ -406,6 +407,9 @@ namespace Midyaf.Data.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("RoomNumber")
                         .IsRequired()
@@ -444,15 +448,15 @@ namespace Midyaf.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("PropertyId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
+
+                    b.Property<int>("PropertyId")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -558,17 +562,6 @@ namespace Midyaf.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Midyaf.Models.Property", b =>
-                {
-                    b.HasOne("Midyaf.Models.AppUser", "Manager")
-                        .WithMany("ManagedPropertys")
-                        .HasForeignKey("ManagerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Manager");
-                });
-
             modelBuilder.Entity("Midyaf.Models.PasswordResetOtp", b =>
                 {
                     b.HasOne("Midyaf.Models.AppUser", "User")
@@ -578,6 +571,17 @@ namespace Midyaf.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Midyaf.Models.Property", b =>
+                {
+                    b.HasOne("Midyaf.Models.AppUser", "Manager")
+                        .WithMany("ManagedProperties")
+                        .HasForeignKey("ManagerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Manager");
                 });
 
             modelBuilder.Entity("Midyaf.Models.Reservation", b =>
@@ -677,7 +681,7 @@ namespace Midyaf.Data.Migrations
 
             modelBuilder.Entity("Midyaf.Models.AppUser", b =>
                 {
-                    b.Navigation("ManagedPropertys");
+                    b.Navigation("ManagedProperties");
 
                     b.Navigation("Reservations");
 

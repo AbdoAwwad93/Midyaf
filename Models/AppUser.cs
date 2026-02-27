@@ -14,5 +14,5 @@ public class AppUser:IdentityUser
     public virtual List<Review>?  Reviews { get; set; }
     public virtual List<Room> Rooms { get; set; }
     public virtual List<Reservation> Reservations { get; set; }
-    public virtual List<Property> ManagedPropertys { get; set; }
+    public virtual List<Property> ManagedProperties { get; set; }
 }

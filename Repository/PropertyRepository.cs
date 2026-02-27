@@ -82,14 +82,14 @@ public class PropertyRepository : GenericRepository<Property>, IPropertyReposito
         };
 
         var totalCount = await query.CountAsync();
-        var propertys = await query
+        var properties = await query
             .Skip((searchDto.Page - 1) * searchDto.PageSize)
             .Take(searchDto.PageSize)
             .ToListAsync();
 
         return new PaginatedResult<Property>
         {
-            Items = propertys,
+            Items = properties,
             TotalCount = totalCount,
             Page = searchDto.Page,
             PageSize = searchDto.PageSize

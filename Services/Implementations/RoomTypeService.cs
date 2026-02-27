@@ -51,7 +51,7 @@ public class RoomTypeService : IRoomTypeService
 
     public async Task<ApiResponse> AddRoomTypeAsync(RoomTypeDTO roomTypeDto)
     {
-        var Property = await _unitOfWork.Propertys.GetByIdAsync(roomTypeDto.PropertyId);
+        var Property = await _unitOfWork.Properties.GetByIdAsync(roomTypeDto.PropertyId);
         if (Property == null)
         {
             return ApiResponse.FailureResponse("Property not found");
@@ -74,7 +74,7 @@ public class RoomTypeService : IRoomTypeService
         }
         if (roomType.PropertyId != roomTypeDto.PropertyId)
         {
-             var Property = await _unitOfWork.Propertys.GetByIdAsync(roomTypeDto.PropertyId);
+             var Property = await _unitOfWork.Properties.GetByIdAsync(roomTypeDto.PropertyId);
              if (Property == null)
              {
                  return ApiResponse.FailureResponse("Target Property not found");
